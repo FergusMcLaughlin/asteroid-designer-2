@@ -2,12 +2,124 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+
+    <link rel="icon" type="image/svg+xml" href="logo.png" />
+    <link rel="icon" href="http://example.com/favicon.png" />
+
+
+    <script src="http://cdn.jsdelivr.net/g/filesaver.js"></script>
+    <script src="js/node.js"></script>
+    <script src="js/linked_list.js"></script>
+
+    <title>Asteroid Prototype</title>
   </head>
+
   <body>
-    <div id="app"></div>
-    <script type="module" src="js/main.js"></script>
+    <h1>ASTEROID PROTOTYPE</h1>
+
+    <section class="Tool_Bar">
+      <div class="Coordinates">
+        <label for="x">X-coordinate</label>
+        <input id="mX" type="text" value="" name="x_coords" />
+
+        <label for="y">Y-coordinate</label>
+        <input id="mY" type="text" value="" name="y_coords" />
+
+        <label for="z">Z-coordinate</label>
+        <input id="mZ" type="text" value="" name="z_coords" />
+
+        <label for="lat">latitude</label>
+        <input id="mLAT" type="text" value="" name="latitude" />
+
+        <label for="lng">longitude</label>
+        <input id="mLNG" type="text" value="" name="longitude" />
+
+        <label for="linkedlist">longitude</label>
+        <textarea  id="List" type="text" value="" name="longitude" rows="50" cols="50"></textarea>
+
+        <button type="button" class="button" onclick="saveDynamicDataToFile();">
+          Click to Save
+        </button>
+      </div>
+
+      <div class="Mode">
+        <label for="Place">Choose Edit Mode:</label>
+        <select name="filter" id="modepicker" onchange="Mode_Update(this)">
+          <option selected="true" value="0">Rock</option>
+          <option value="1">Crater</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="Place">Size:  </label>
+        <span id="rangeValue">1</span>
+        <Input class="range" type="range" name="slider" value="1" min="1" max="10" onChange="rangeSlide(this.value)" onmousemove="rangeSlide(this.value)"></Input>
+
+      </div>
+
+      <button type="button" class="button" onclick="listTest();">
+        List Test
+      </button>
+        
+
+    </section>
+
+   <script type="module"  src="js/main.js"></script>
+
+    <script>
+      function saveDynamicDataToFile() {
+
+        
+
+        var mouseX = document.getElementById("mX").value;
+        var mouseY = document.getElementById("mY").value;
+        var mouseZ = document.getElementById("mZ").value;
+
+        var latitude = document.getElementById("mLAT").value;
+        var longitude = document.getElementById("mLNG").value;
+
+        //var StringList = document.getElementById("List").value;
+
+         var myModule = require('js/main'); 
+        
+        //var String1 = myModule.StringList;
+        var String2 = myModule.StringList2;
+   
+
+        var blob = new Blob(
+          [
+            "identifier PANGU: Boulder List File",
+            "\n",
+            "horizontal_scale 1",
+            "\n",
+            "offset 0 0",
+            "\n",
+            "*place holder*",
+            "\n",
+            "// Each line following this comment is a crater definition consisting of four required and six optional values.",
+            "\n",
+            "// x_pos y_pos diameter age [irregularity mode] [irregularity ratio] [replace] [secondary] [infill height] [related boulders]",
+            "\n",
+            StringTest,
+          ],
+          { type: "text/plain;charset=utf-8", endings:'native'}
+        );
+        saveAs(blob, "Coordinates.txt");
+      }
+    </script>
   </body>
 </html>
+<!---
+["identifier :", " ", "*This will be based of the mode*", "\n",
+"horizontal_scale", " ", "*place holder*", "\n",
+"offset", " ", "*place holder*", "\n",
+"size", " ", "*place holder*", "\n", 
+"// Each line following this comment is a crater definition consisting of four required and six optional values.", "\n",
+"// x_pos y_pos diameter age [irregularity mode] [irregularity ratio] [replace] [secondary] [infill height] [related boulders]", "\n",
+latitude, "     ",longitude ] -->
+<!--
+["Coordinates : ", mouseX, ",", mouseY, ",", mouseZ, "\n", 
+" Latitude & Longitude: ", latitude, ",", longitude,],
+-->
