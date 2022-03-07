@@ -1,4 +1,4 @@
-var StringTest ;
+//var StringTest ;
 var boulderString;
 var craterString;
 
@@ -156,6 +156,7 @@ class linkedList {
   
   //list.insertLast(400,200);
   list.printListData();
+  console.log(boulderString);
   
   
   }
