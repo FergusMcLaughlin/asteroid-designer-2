@@ -15,8 +15,8 @@ function saveDynamicDataToFile() {
 
     //var StringList = document.getElementById("List").value;
 
-     var myModule = require('js/main'); 
-    
+     var myModule = require('js/main');
+
     //var String1 = myModule.StringList;
     var String2 = myModule.StringList2;
 
@@ -29,16 +29,13 @@ function saveDynamicDataToFile() {
         "\n",
         "offset 0 0",
         "\n",
-        "*place holder*",
-        "\n",
         "// Each line following this comment is a crater definition consisting of four required and six optional values.",
         "\n",
         "// x_pos y_pos diameter age [irregularity mode] [irregularity ratio] [replace] [secondary] [infill height] [related boulders]",
         "\n",
-        StringTest,
+        boulderString,
       ],
       { type: "text/plain;charset=utf-8", endings:'native'}
     );
     saveAs(blob, "Coordinates.txt");
   }
-  
