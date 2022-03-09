@@ -441,5 +441,135 @@ function Coordinates_Converter() {
 
 
 }
+//#########################################################################################################################################
+canvasContainer = document.getElementsByClassName('upper-canvas')[0]
+canvasContainer.addEventListener('dragenter', handleDragEnter)
+canvasContainer.addEventListener('dragover', function(event){handleDragOver(event)})
+canvasContainer.addEventListener('dragleave', handleDragLeave)
+canvasContainer.addEventListener('drop', function(){handleDrop(event)})
+
+// DRAG AND DROP
+
+function handleDragStart( e ) {
+  [].forEach.call(images, function (img) {
+      img.classList.remove('img_dragging')
+ })
+ this.classList.add('img_dragging')
+}
+ 
+function handleDragOver( e ) {
+ if (e.preventDefault ) {
+   e.preventDefault() 
+   // e.dataTransfer.dropEffect = 'copy'; 
+ }	 
+ if(e.dataTransfer){
+   e.dataTransfer.dropEffect = 'copy'
+ }
+ // dlog('log', e)
+ return false
+}
+ 
+function handleDragEnter( e ) {
+ this.classList.add('over')
+}
+ 
+function handleDragLeave( e ) {
+ this.classList.remove('over') // this / e.target is previous target element.
+}
+ 
+function handleDrop( event ) {
+
+ event.preventDefault()
+ if( event.stopPropagation ) event.stopPropagation()
+
+ // handle desktop images
+ // if(dpk.session.logged_in){
+
+ if( event.dataTransfer.files.length > 0 ){
+
+   // dlog('log', '1 inbound drop')
+
+   var files = event.dataTransfer.files
+   // for (var i = 0, f; f = files[i]; i++) {
+   if( files.length > 1 ){
+
+     dpk_alert('only 1 image at a time currently', 3000)
+     // alert('too many filezzzzz in one drop (5<)')
+   }else{
+
+     for( let i = 0 ; i < files.length; i++ ){
+
+       let the_file = files[i]
+
+       if ( the_file.type.match('image.*') ) {
+
+         let mb = Number( (the_file.size / 1000000 ).toFixed(3) )
+         //blorb
+         if( mb < dpk.config.upload.mb[ USER._level ] ){
+
+           if( the_file.type.match(/svg/i) ){
+ 
+             dpk_alert('svg drops currently unsupported', 3000 )
+ 
+           }else{
+                   
+             var reader = new FileReader()
+
+             dpk_alert('saving image to server...', 2000)
+     
+             reader.readAsDataURL( the_file )
+
+             reader.onloadend = function( evt ) {
+
+               console.log('THE DROP FILE: ', the_file )
+       
+               CANVAS.save_image( evt.target.result, the_file, event )
+   
+             }	 
+
+           }
+
+         }else{
+
+           dpk_alert('filesize too large: ' + mb + 'mb out of ' + dpk.config.upload.mb[dpk.USER._level] + 'mb limit', 2500)
+ 
+         }
+
+       }
+
+     }
+
+    }
+   // }
+ }else{// dataTransfer.files.length <= 0
+
+   // cross browser drops.....			
+
+ }
+ 
+ CANVAS._canvas.requestRenderAll()
+ return false
+} 
+ 
+ 
+ 
+function handleDragEnd(e) {
+   
+ [].forEach.call(images, function (img) {
+   img.classList.remove('img_dragging')
+ })
+      
+}
+
+
+
+export {
+ handleDragStart,
+ handleDragOver,
+ handleDragEnter,
+ handleDragLeave,
+ handleDrop,
+ handleDragEnd,
+}
 
 
