@@ -430,7 +430,7 @@ function Coordinates_Converter() {
   if( mouseHelper.position.y < 0 ) lat *= -1;
 
   //Convert from raidains to degtrees
-  Glat = lat * 180.0/Math.PI;
+  Glat = lat * 180.0/Math.PI; //360 added so itll always be pos it used to be 180
   Glng = lng * 180.0/Math.PI;
   //document.getElementById("mLNG").value = Glng;
   //document.getElementById("mLAT").value = Glat;
