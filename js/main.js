@@ -323,6 +323,8 @@ function place() {
   const material = new THREE.MeshBasicMaterial({
     color: 0xffff00,
     map: THREE.ImageUtils.loadTexture("images/marker_mask5.png"),
+    //opacity: 0.5,
+    //transparent: true,
     alphaTest: 0.5,
   });
 
@@ -366,7 +368,7 @@ function place_rock() {
     //orientation.copy(mouseHelper.rotation);
     rockmesh.material = new THREE.MeshBasicMaterial({
       color: 0xffff00,
-      wireframe: true,
+      wireframe: false,
       opacity: 0.5,
       transparent: true,
     });
@@ -441,7 +443,7 @@ function Coordinates_Converter() {
 
 
 }
-//#########################################################################################################################################
+/*#########################################################################################################################################
 canvasContainer = document.getElementsByClassName('upper-canvas')[0]
 canvasContainer.addEventListener('dragenter', handleDragEnter)
 canvasContainer.addEventListener('dragover', function(event){handleDragOver(event)})
@@ -572,4 +574,4 @@ export {
  handleDragEnd,
 }
 
-
+*/
