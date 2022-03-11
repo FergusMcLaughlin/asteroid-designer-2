@@ -1,4 +1,6 @@
-var StringTest ;
+//var StringTest ;
+var boulderString;
+var craterString;
 
 class linkedList {
     constructor() {
@@ -124,25 +126,7 @@ class linkedList {
         this.size = 0;
         //stuff is still in mem but this works for now
     }
-  /*
-    //Print ID.
-    printListData() {
-    let current = this.head;
-  
-    while(current) {
-        console.log(current.ID);
-        console.log(current.Nlat);
-        console.log(current.Nlng);
-  
-       // console.log(current.size);
-       // console.log(current.depth);
-       // console.log(current.index);
-  
-  
-        current = current.next;
-        }
-    }
-  */
+
     printListData() {
       let current = this.head;
       
@@ -150,11 +134,11 @@ class linkedList {
   
         if(current.type == 1) {
   
-        StringTest = StringTest +"\n"+ current.Nlng + "       " + current.Nlat +"       " + current.size +"       " + current.depth + "       " + current.index;
+        boulderString = boulderString +"\n"+ current.Nlng + "       " + current.Nlat +"       " + current.size +"       " + current.depth + "       " + current.index;
           
           }   else  if(current.type == 2) {
   
-            StringTest2 = StringTest2 +"\n"+ current.Nlng + "       " + current.Nlat +"       " + current.size +"       " + current.depth + "       " + current.index;
+            craterString = craterString +"\n"+ current.Nlng + "       " + current.Nlat +"       " + current.size +"       " + current.depth + "       " + current.index;
               
             }
           current = current.next;
@@ -167,52 +151,13 @@ class linkedList {
     }
   }
   
-  
-  
   const list = new linkedList();
   window.listTest = function(){
   
-  
   //list.insertLast(400,200);
-  
   list.printListData();
+  console.log(boulderString);
   
   
   }
-  //list.getAt(2);
-  /*
-  var blob = new Blob(
-    [
-      "identifier :",
-      " ",
-      "*This will be based of the mode*",
-      "\n",
-      "horizontal_scale",
-      " ",
-      "*place holder*",
-      "\n",
-      "offset",
-      " ",
-      "*place holder*",
-      "\n",
-      "size",
-      " ",
-      "*place holder*",
-      "\n",
-      "// Each line following this comment is a crater definition consisting of four required and six optional values.",
-      "\n",
-      "// x_pos y_pos diameter age [irregularity mode] [irregularity ratio] [replace] [secondary] [infill height] [related boulders]",
-      "\n",
-      latitude,
-      "     ",
-      longitude,
-    ],
-    { type: "text/plain;charset=utf-8" }
-  );
-  saveAs(blob, "Coordinates.txt");
-  }
-  
-  
-  
-  document.getElementById("Coord_List").value = Glat;
-  */
+ 

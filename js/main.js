@@ -34,12 +34,13 @@ var place_size;
 //Testing
 var place_mode;
 var IDcount;
-//var StringTest ;
+var StringTest;
 var StringTest2;
 var StringBuffer;
 
 //export {StringTest as StringTest}; // export IDS without 
 export {StringTest2 as StringTest2};
+export {StringTest as StringTest};
 
 
 //intersection point on the mesh
@@ -238,7 +239,7 @@ function Initialisation() {
         document.getElementById("mLAT").value = Glat;
         document.getElementById("mLNG").value = Glng;
 
-        document.getElementById("List").value = StringTest2;
+     //   document.getElementById("List").value = StringTest2;
         
         list.insertFirst(2,Glat,Glng,40,0,1);
         console.log(StringTest2);
@@ -256,7 +257,7 @@ function Initialisation() {
         document.getElementById("mLAT").value = Glat;
         document.getElementById("mLNG").value = Glng;
       
-        document.getElementById("List").value = StringTest;
+       // document.getElementById("List").value = StringTest;
         
 
         //add to list
@@ -394,9 +395,6 @@ function Window_Resize() {
 function Animation() {
   requestAnimationFrame(Animation);
   renderer.render(scene, camera);
-  // document.getElementById("Current_PosX").innerHTML = (mouseHelper.position.x);
-  // document.getElementById("Current_PosY").innerHTML = (mouseHelper.position.y);
-  // document.getElementById("Current_PosZ").innerHTML = (mouseHelper.position.z);
 }
 
 
