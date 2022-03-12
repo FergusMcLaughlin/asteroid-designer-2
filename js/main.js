@@ -97,6 +97,8 @@ window.printList = function(StringTest) {
 
 function Initialisation() {
 
+  console.log(threeObject);
+
   // Renderer for the actual obejct contatiner.
   renderer = new THREE.WebGLRenderer();
   /*
@@ -167,7 +169,7 @@ function Initialisation() {
   scene.add(new THREE.AmbientLight(0xffffff, 0.2)); // ambient
 
   //loads the model this is okay for prototype purposes but will need to be dynamic and probably enterned by the user.
-  let model = "models/Vesta_1_100.glb";
+ // let model = "models/Vesta_1_100.glb";
   GLTF_Loader(); // Call the loader function.
 
   //Intersection check function
@@ -293,8 +295,17 @@ function Initialisation() {
 function GLTF_Loader() {
   const loader = new GLTFLoader();
 
-  loader.load("models/Itokawa_1_1.gltf", function (gltf) {
+  loader.load(threeObject, function (gltf) { 
     mesh = gltf.scene.children[0];
+
+    
+      
+      //const elm = document.getElementById("myFile");
+  
+      //loader.load(elm.files[0], () => {
+         // mesh = gltf.scene.children[0];
+      
+  
     //mesh.material = new THREE.MeshPhongMaterial( {
     //    specular: 0x111111,
     //    map: textureLoader.load( 'models/gltf/LeePerrySmith/Map-COL.jpg' ),

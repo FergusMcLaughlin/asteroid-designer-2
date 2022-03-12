@@ -5,6 +5,8 @@ check one file has been uploaded
 
 */
 
+var modelfile;
+
 document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
   const dropZoneElement = inputElement.closest(".drop-zone");
 
@@ -40,16 +42,25 @@ document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
       //look at this to make sure only one model has been uploaded or just use one
       inputElement.files = e.dataTransfer.files;
       updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+      const threeObject = URL.createObjectURL(e.dataTransfer.files[0]);  // `URL` is globally available
+      console.log(threeObject);
     }
 
     dropZoneElement.classList.remove("drop-zone--over");
   });
 });
 
+
+function reupdate(file, e){
+
+}
+
 function updateThumbnail(dropZoneElement, file) {
   //  console.log(dropZoneElement);
   console.log(file);
   //   console.log(file.type);
+  //modelfile = file.data;
+  //console.log(file);
 
   let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
 
@@ -71,8 +82,16 @@ function updateThumbnail(dropZoneElement, file) {
   //image
   // if (file.type.startsWith("image/") {}
 
-  const reader = new FileReader();
-
+  var reader = new FileReader();
   reader.readAsDataURL(file);
-  reader.onload = () => {};
+  reader.onload = file => {
+    var  modelF = file[0];
+    console.log( file );
+  }
+
+ 
+
+
+  //reader.readAsDataURL(file);
+ // reader.onload = () => {};
 }
