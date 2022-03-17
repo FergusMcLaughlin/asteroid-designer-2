@@ -26,7 +26,7 @@ let line;
 
 var Glat ;
 var Glng ;
-var choice;
+var choice = 1;
 var place_size;
 
 
@@ -59,21 +59,24 @@ const orientation = new THREE.Euler();
 const size = new THREE.Vector3(8, 8, 8);
 const params = {
   minScale: 10,
-  maxScale: 20,
+  maxScale: 100,
   rotate: true,
   clear: function () {
     removeDecals()
   },
 };
 
-Initialisation(); //run initialisation function
 
-//function Mode_Update(){
-  //filter.addEventListener('change', filterChanged);
-  //var choice = document.getElementById("modepicker");
- // var place_mode = choice.value;
-  //console.log(choice);
-//}
+
+//Initialisation(); //run initialisation function
+
+
+function Mode_Update(){
+  filter.addEventListener('change', filterChanged);
+  var choice = document.getElementById("modepicker");
+  var place_mode = choice.value;
+  console.log(choice);
+}
 
 
 window.onload = function () {
@@ -91,13 +94,19 @@ window.rangeSlide = function(value) {
 
 window.printList = function(StringTest) {
   document.getElementById('Coord_List').value = StringTest;
+
+}
+
+
+window.reload = function() {
+  Initialisation();
 }
 
 
 
 function Initialisation() {
-
-  console.log(threeObject);
+  choice = document.getElementById('newone');
+  console.log(choice);
 
   // Renderer for the actual obejct contatiner.
   renderer = new THREE.WebGLRenderer();
@@ -158,8 +167,8 @@ function Initialisation() {
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.addEventListener("change", Animation);
-  controls.minDistance = 300;
-  controls.maxDistance = 600;
+  controls.minDistance = 100;
+  controls.maxDistance = 2000;
   controls.enablePan = false;
 
   // Lighting
@@ -266,6 +275,8 @@ function Initialisation() {
         list.insertFirst(1,Glat,Glng,40,0,1);
 
         console.log(StringTest);
+
+        console.log(obj);
         //listTest();
 
          // console.log(StringTest);
@@ -292,33 +303,77 @@ function Initialisation() {
 
 
 //loads fiels in a gltf format
+/*
 function GLTF_Loader() {
   const loader = new GLTFLoader();
 
-  loader.load(threeObject, function (gltf) { 
-    mesh = gltf.scene.children[0];
+  loader.parse(obj, "", (gltf) => { 
+  mesh = gltf.scene.children[0];
 
-    
-      
-      //const elm = document.getElementById("myFile");
-  
-      //loader.load(elm.files[0], () => {
-         // mesh = gltf.scene.children[0];
-      
-  
-    //mesh.material = new THREE.MeshPhongMaterial( {
-    //    specular: 0x111111,
-    //    map: textureLoader.load( 'models/gltf/LeePerrySmith/Map-COL.jpg' ),
-    //    specularMap: textureLoader.load( 'models/gltf/LeePerrySmith/Map-SPEC.jpg' ),
-    //   normalMap: textureLoader.load( 'models/gltf/LeePerrySmith/Infinite-Level_02_Tangent_SmoothUV.jpg' ),
-    //     shininess: 25
-    //  } );
 
     scene.add(mesh);
     mesh.scale.set(0.4, 0.4, 0.4);
-    //This is different to the gltf loader used in the heat map.
+    
   });
 }
+*/
+
+/*
+function GLTF_Loader() {
+  const loader = new GLTF_Loader();
+  const elm = document.getElementById("loaded");
+
+  loader.load(elm.files[0], () => {
+      mesh = gltf.scene.children[0];
+      scene.add(mesh);
+      mesh.scale.set(0.4, 0.4, 0.4);
+  });
+}
+
+    //loads fiels in a gltf format
+    function GLTF_Loader() {
+      const loader = new GLTFLoader();
+      const elm = document.getElementById("loaded");
+     // console.log(threeObject);
+      loader.load(elm.files[0], ()  => { 
+      mesh = gltf.scene.children[0];
+    
+    
+        scene.add(mesh);
+        mesh.scale.set(0.4, 0.4, 0.4);
+        //This is different to the gltf loader used in the heat map.
+      });
+    }
+        //loads fiels in a gltf format
+    function GLTF_Loader() {
+      const loader = new GLTFLoader();
+     // console.log(threeObject);
+      loader.load("models/Itokawa_1_1.glb", function (gltf) { 
+      mesh = gltf.scene.children[0];
+    
+    
+        scene.add(mesh);
+        mesh.scale.set(0.4, 0.4, 0.4);
+        //This is different to the gltf loader used in the heat map.
+      });
+    }
+
+
+*/
+
+function GLTF_Loader() {
+  const loader = new GLTFLoader();
+
+  loader.parse(obj, "", (gltf) => { 
+  mesh = gltf.scene.children[0];
+
+
+    scene.add(mesh);
+    mesh.scale.set(0.4, 0.4, 0.4);
+    
+  });
+}
+
 
 function place() {
   position.copy(intersection.point);
@@ -454,6 +509,35 @@ function Coordinates_Converter() {
 
 
 }
+
+var obj;
+var threeObject;
+
+const input = document.querySelector('input[type="file"]');
+input.addEventListener('change', function(e) {
+
+    console.log(input.files)
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        
+
+        obj = reader.result;
+        threeObject = URL.createObjectURL(input.files[0]);
+        console.log(obj);
+        console.log(threeObject);
+        Initialisation();
+
+    }
+
+    
+    reader.readAsArrayBuffer(input.files[0]);
+  
+    
+
+},false)
+
+
 /*#########################################################################################################################################
 canvasContainer = document.getElementsByClassName('upper-canvas')[0]
 canvasContainer.addEventListener('dragenter', handleDragEnter)
@@ -583,6 +667,40 @@ export {
  handleDragLeave,
  handleDrop,
  handleDragEnd,
+}
+
+*/
+
+
+      
+      //const elm = document.getElementById("myFile");
+  
+      //loader.load(elm.files[0], () => {
+         // mesh = gltf.scene.children[0];
+      
+  
+    //mesh.material = new THREE.MeshPhongMaterial( {
+    //    specular: 0x111111,
+    //    map: textureLoader.load( 'models/gltf/LeePerrySmith/Map-COL.jpg' ),
+    //    specularMap: textureLoader.load( 'models/gltf/LeePerrySmith/Map-SPEC.jpg' ),
+    //   normalMap: textureLoader.load( 'models/gltf/LeePerrySmith/Infinite-Level_02_Tangent_SmoothUV.jpg' ),
+    //     shininess: 25
+    //  } );
+
+/*
+
+    //loads fiels in a gltf format
+function GLTF_Loader() {
+  const loader = new GLTFLoader();
+ // console.log(threeObject);
+  loader.load("models/Itokawa_1_1.glb", function (gltf) { 
+  mesh = gltf.scene.children[0];
+
+
+    scene.add(mesh);
+    mesh.scale.set(0.4, 0.4, 0.4);
+    //This is different to the gltf loader used in the heat map.
+  });
 }
 
 */
