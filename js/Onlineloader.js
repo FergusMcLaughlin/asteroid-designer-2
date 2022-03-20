@@ -13,7 +13,7 @@ input.addEventListener('change', function(e) {
     }
 
     reader.readAsArrayBuffer(input.files[0]);
-    GLTF_Loader();
+
 
 },false)
 

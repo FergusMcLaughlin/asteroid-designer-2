@@ -238,7 +238,7 @@ function Initialisation() {
  
     if (moved === false) {
       Check_Intersection(event.clientX, event.clientY);
-      if (intersection.intersects && choice.value == 1) {
+      if (intersection.intersects) { //&& choice.value == 1) {
        // console.log(mouseHelper.position);
         place();
         
@@ -497,9 +497,19 @@ function Coordinates_Converter() {
   //invert if Y is negative to ensure teh latitude is comprised between -PI/2 & PI / 2
   if( mouseHelper.position.y < 0 ) lat *= -1;
 
+
   //Convert from raidains to degtrees
-  Glat = lat * 180.0/Math.PI; //360 added so itll always be pos it used to be 180
-  Glng = lng * 180.0/Math.PI;
+  lat = lat * 180.0/Math.PI; 
+  lng = lng * 180.0/Math.PI; // if negitive +360****** CHECK or add 2PI before this
+
+
+  if (lng < 0){
+    lng = lng + 360;
+  }
+
+  Glat = lat ;
+  Glng = lng ;
+
   //document.getElementById("mLNG").value = Glng;
   //document.getElementById("mLAT").value = Glat;
   console.log("long and lat : ",lng,lat);
