@@ -70,14 +70,21 @@ const params = {
 
 //Initialisation(); //run initialisation function
 
-
+/*
 function Mode_Update(){
   filter.addEventListener('change', filterChanged);
   var choice = document.getElementById("modepicker");
   var place_mode = choice.value;
   console.log(choice);
 }
+*/
 
+window.Mode_Update = function() {
+  filter.addEventListener('change', filterChanged);
+  var choice = document.getElementById("modepicker");
+  var place_mode = choice.value;
+  console.log(choice);
+}
 
 window.onload = function () {
   choice = document.getElementById('modepicker');
@@ -105,7 +112,7 @@ window.reload = function() {
 
 
 function Initialisation() {
-  choice = document.getElementById('newone');
+  //choice = document.getElementById('newone');
   console.log(choice);
 
   // Renderer for the actual obejct contatiner.
@@ -238,7 +245,7 @@ function Initialisation() {
  
     if (moved === false) {
       Check_Intersection(event.clientX, event.clientY);
-      if (intersection.intersects) { //&& choice.value == 1) {
+      if (intersection.intersects && choice.value == 1) { //&& choice.value == 1) {
        // console.log(mouseHelper.position);
         place();
         
@@ -303,64 +310,6 @@ function Initialisation() {
 
 
 //loads fiels in a gltf format
-/*
-function GLTF_Loader() {
-  const loader = new GLTFLoader();
-
-  loader.parse(obj, "", (gltf) => { 
-  mesh = gltf.scene.children[0];
-
-
-    scene.add(mesh);
-    mesh.scale.set(0.4, 0.4, 0.4);
-    
-  });
-}
-*/
-
-/*
-function GLTF_Loader() {
-  const loader = new GLTF_Loader();
-  const elm = document.getElementById("loaded");
-
-  loader.load(elm.files[0], () => {
-      mesh = gltf.scene.children[0];
-      scene.add(mesh);
-      mesh.scale.set(0.4, 0.4, 0.4);
-  });
-}
-
-    //loads fiels in a gltf format
-    function GLTF_Loader() {
-      const loader = new GLTFLoader();
-      const elm = document.getElementById("loaded");
-     // console.log(threeObject);
-      loader.load(elm.files[0], ()  => { 
-      mesh = gltf.scene.children[0];
-    
-    
-        scene.add(mesh);
-        mesh.scale.set(0.4, 0.4, 0.4);
-        //This is different to the gltf loader used in the heat map.
-      });
-    }
-        //loads fiels in a gltf format
-    function GLTF_Loader() {
-      const loader = new GLTFLoader();
-     // console.log(threeObject);
-      loader.load("models/Itokawa_1_1.glb", function (gltf) { 
-      mesh = gltf.scene.children[0];
-    
-    
-        scene.add(mesh);
-        mesh.scale.set(0.4, 0.4, 0.4);
-        //This is different to the gltf loader used in the heat map.
-      });
-    }
-
-
-*/
-
 function GLTF_Loader() {
   const loader = new GLTFLoader();
 
@@ -500,10 +449,10 @@ function Coordinates_Converter() {
 
   //Convert from raidains to degtrees
   lat = lat * 180.0/Math.PI; 
-  lng = lng * 180.0/Math.PI; // if negitive +360****** CHECK or add 2PI before this
+  lng = lng * 180.0/Math.PI; 
 
 
-  if (lng < 0){
+  if (lng < 0){ //corrects the lng not letting it become a minus num
     lng = lng + 360;
   }
 
@@ -546,171 +495,3 @@ input.addEventListener('change', function(e) {
     
 
 },false)
-
-
-/*#########################################################################################################################################
-canvasContainer = document.getElementsByClassName('upper-canvas')[0]
-canvasContainer.addEventListener('dragenter', handleDragEnter)
-canvasContainer.addEventListener('dragover', function(event){handleDragOver(event)})
-canvasContainer.addEventListener('dragleave', handleDragLeave)
-canvasContainer.addEventListener('drop', function(){handleDrop(event)})
-
-// DRAG AND DROP
-
-function handleDragStart( e ) {
-  [].forEach.call(images, function (img) {
-      img.classList.remove('img_dragging')
- })
- this.classList.add('img_dragging')
-}
- 
-function handleDragOver( e ) {
- if (e.preventDefault ) {
-   e.preventDefault() 
-   // e.dataTransfer.dropEffect = 'copy'; 
- }	 
- if(e.dataTransfer){
-   e.dataTransfer.dropEffect = 'copy'
- }
- // dlog('log', e)
- return false
-}
- 
-function handleDragEnter( e ) {
- this.classList.add('over')
-}
- 
-function handleDragLeave( e ) {
- this.classList.remove('over') // this / e.target is previous target element.
-}
- 
-function handleDrop( event ) {
-
- event.preventDefault()
- if( event.stopPropagation ) event.stopPropagation()
-
- // handle desktop images
- // if(dpk.session.logged_in){
-
- if( event.dataTransfer.files.length > 0 ){
-
-   // dlog('log', '1 inbound drop')
-
-   var files = event.dataTransfer.files
-   // for (var i = 0, f; f = files[i]; i++) {
-   if( files.length > 1 ){
-
-     dpk_alert('only 1 image at a time currently', 3000)
-     // alert('too many filezzzzz in one drop (5<)')
-   }else{
-
-     for( let i = 0 ; i < files.length; i++ ){
-
-       let the_file = files[i]
-
-       if ( the_file.type.match('image.*') ) {
-
-         let mb = Number( (the_file.size / 1000000 ).toFixed(3) )
-         //blorb
-         if( mb < dpk.config.upload.mb[ USER._level ] ){
-
-           if( the_file.type.match(/svg/i) ){
- 
-             dpk_alert('svg drops currently unsupported', 3000 )
- 
-           }else{
-                   
-             var reader = new FileReader()
-
-             dpk_alert('saving image to server...', 2000)
-     
-             reader.readAsDataURL( the_file )
-
-             reader.onloadend = function( evt ) {
-
-               console.log('THE DROP FILE: ', the_file )
-       
-               CANVAS.save_image( evt.target.result, the_file, event )
-   
-             }	 
-
-           }
-
-         }else{
-
-           dpk_alert('filesize too large: ' + mb + 'mb out of ' + dpk.config.upload.mb[dpk.USER._level] + 'mb limit', 2500)
- 
-         }
-
-       }
-
-     }
-
-    }
-   // }
- }else{// dataTransfer.files.length <= 0
-
-   // cross browser drops.....			
-
- }
- 
- CANVAS._canvas.requestRenderAll()
- return false
-} 
- 
- 
- 
-function handleDragEnd(e) {
-   
- [].forEach.call(images, function (img) {
-   img.classList.remove('img_dragging')
- })
-      
-}
-
-
-
-export {
- handleDragStart,
- handleDragOver,
- handleDragEnter,
- handleDragLeave,
- handleDrop,
- handleDragEnd,
-}
-
-*/
-
-
-      
-      //const elm = document.getElementById("myFile");
-  
-      //loader.load(elm.files[0], () => {
-         // mesh = gltf.scene.children[0];
-      
-  
-    //mesh.material = new THREE.MeshPhongMaterial( {
-    //    specular: 0x111111,
-    //    map: textureLoader.load( 'models/gltf/LeePerrySmith/Map-COL.jpg' ),
-    //    specularMap: textureLoader.load( 'models/gltf/LeePerrySmith/Map-SPEC.jpg' ),
-    //   normalMap: textureLoader.load( 'models/gltf/LeePerrySmith/Infinite-Level_02_Tangent_SmoothUV.jpg' ),
-    //     shininess: 25
-    //  } );
-
-/*
-
-    //loads fiels in a gltf format
-function GLTF_Loader() {
-  const loader = new GLTFLoader();
- // console.log(threeObject);
-  loader.load("models/Itokawa_1_1.glb", function (gltf) { 
-  mesh = gltf.scene.children[0];
-
-
-    scene.add(mesh);
-    mesh.scale.set(0.4, 0.4, 0.4);
-    //This is different to the gltf loader used in the heat map.
-  });
-}
-
-*/
