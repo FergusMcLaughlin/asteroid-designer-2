@@ -133,6 +133,8 @@ function Initialisation() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000000);
 
+
+
   // Camera
   camera = new THREE.PerspectiveCamera(
     45,
@@ -184,9 +186,15 @@ function Initialisation() {
   camera.add(light);
   scene.add(new THREE.AmbientLight(0xffffff, 0.2)); // ambient
 
+
+
   //loads the model this is okay for prototype purposes but will need to be dynamic and probably enterned by the user.
  // let model = "models/Vesta_1_100.glb";
   GLTF_Loader(); // Call the loader function.
+
+  const axesHelper = new THREE.AxesHelper( 5 );
+  axesHelper.position.set (200,-100,0);
+  scene.add( axesHelper );
 
   //Intersection check function
   function Check_Intersection(x, y) {
@@ -277,13 +285,11 @@ function Initialisation() {
       
        // document.getElementById("List").value = StringTest;
         
-
+       
         //add to list
-        list.insertFirst(1,Glat,Glng,40,0,1);
+        list.insertFirst(rockID, 1,Glat,Glng,40,0,1);
+        console.log(rockID);
 
-        console.log(StringTest);
-
-        console.log(obj);
         //listTest();
 
          // console.log(StringTest);
@@ -362,7 +368,8 @@ function place() {
   scene.add(m);
   console.log(m.scale);
 }
-
+var rockID = 0;
+const rockList=[];
 function place_rock() {
   const loader = new GLTFLoader();
   loader.load("models/Bennu_1_1.glb", function (gltf) {
@@ -393,6 +400,15 @@ function place_rock() {
  
     rockmesh.scale.set(place_size / 100, place_size / 100, place_size / 100);
 
+    const uuid = rockmesh.uuid
+
+    rockList[uuid] = {
+      model:gltf,
+      mydata: {
+      //place: holder,
+      }
+    }
+   rockID = uuid;
     Coordinates_Converter();
 
   });
@@ -495,3 +511,5 @@ input.addEventListener('change', function(e) {
     
 
 },false)
+
+

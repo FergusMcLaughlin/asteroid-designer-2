@@ -3,6 +3,7 @@
 function saveDynamicDataToFile() {
   //if mode is 1 then printString = sting1
   //if mode is 2 then printString = string2
+  list.printListData();
 
   var mouseX = document.getElementById("mX").value;
   var mouseY = document.getElementById("mY").value;

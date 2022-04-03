@@ -9,15 +9,15 @@ class linkedList {
     }
   
     //Insert first.
-    insertFirst(type, Nlat, Nlng, size, depth, index) {
-        this.head = new node(type, Nlat, Nlng, size, depth, index,this.head);
+    insertFirst(ID, type, Nlat, Nlng, size, depth, index) {
+        this.head = new node(ID, type, Nlat, Nlng, size, depth, index,this.head);
   
         this.size++;
     }
   
     //Insert last.
-    insertLast(type, Nlat, Nlng, size, depth, index) {
-        let n0de = new node(type, Nlat, Nlng, size, depth, index);
+    insertLast(ID, type, Nlat, Nlng, size, depth, index) {
+        let n0de = new node(ID, type, Nlat, Nlng, size, depth, index);
         let current;
   
         //if empty, = head
@@ -36,7 +36,7 @@ class linkedList {
     }
   
     //Insert at index.
-    inserAt(type, Nlat, Nlng, size, depth, index) {
+    inserAt(ID, type, Nlat, Nlng, size, depth, index) {
         //if out of range
         if(index > 0 && index > this.size){
             return;
@@ -44,12 +44,12 @@ class linkedList {
   
         //if first
         if(index === 0) {
-            this.head = new node(type, Nlat, Nlng, size, depth, index, this.head);
+            this.head = new node(ID, type, Nlat, Nlng, size, depth, index, this.head);
   
             this.size++;
         }
   
-        const n0de = new node(type, Nlat, Nlng, size, depth, index);
+        const n0de = new node(ID, type, Nlat, Nlng, size, depth, index);
         let current, previous;
   
         //set current to first
@@ -134,11 +134,11 @@ class linkedList {
   
         if(current.type == 1) {
   
-        boulderString = boulderString +"\n"+ current.Nlng + "       " + current.Nlat +"       " + current.size +"       " + current.depth + "       " + current.index;
+        boulderString = boulderString +"\n"+current.ID +"   :    "+current.Nlng + "\t" + current.Nlat +"\t" + current.size +"\t" + current.depth + "\t" + current.index;
           
           }   else  if(current.type == 2) {
   
-            craterString = craterString +"\n"+ current.Nlng + "       " + current.Nlat +"       " + current.size +"       " + current.depth + "       " + current.index;
+            craterString = craterString +"\n"+ current.Nlng + "\t" + current.Nlat +"\t" + current.size +"\t" + current.depth + "\t" + current.index;
               
             }
           current = current.next;
