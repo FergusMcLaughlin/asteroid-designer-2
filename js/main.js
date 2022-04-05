@@ -24,12 +24,10 @@ let rockmesh;
 let raycaster;
 let line;
 
-var Glat ;
-var Glng ;
+var Glat;
+var Glng;
 var choice = 1;
 var place_size;
-
-
 
 //Testing
 var place_mode;
@@ -38,10 +36,9 @@ var StringTest;
 var StringTest2;
 var StringBuffer;
 
-//export {StringTest as StringTest}; // export IDS without 
-export {StringTest2 as StringTest2};
-export {StringTest as StringTest};
-
+//export {StringTest as StringTest}; // export IDS without
+export { StringTest2 as StringTest2 };
+export { StringTest as StringTest };
 
 //intersection point on the mesh
 const intersection = {
@@ -62,11 +59,9 @@ const params = {
   maxScale: 100,
   rotate: true,
   clear: function () {
-    removeDecals()
+    removeDecals();
   },
 };
-
-
 
 //Initialisation(); //run initialisation function
 
@@ -79,59 +74,52 @@ function Mode_Update(){
 }
 */
 
-window.Mode_Update = function() {
-  filter.addEventListener('change', filterChanged);
+window.Mode_Update = function () {
+  filter.addEventListener("change", filterChanged);
   var choice = document.getElementById("modepicker");
   var place_mode = choice.value;
   console.log(choice);
-}
+};
 
 window.onload = function () {
-  choice = document.getElementById('modepicker');
+  choice = document.getElementById("modepicker");
   console.log(choice);
-}
-
+};
 
 //changes the range slider number
-window.rangeSlide = function(value) {
-  document.getElementById('rangeValue').innerHTML = value;
+window.rangeSlide = function (value) {
+  document.getElementById("rangeValue").innerHTML = value;
   place_size = value;
   console.log(place_size);
-}
+};
 
-window.printList = function(StringTest) {
-  document.getElementById('Coord_List').value = StringTest;
+window.printList = function (StringTest) {
+  document.getElementById("Coord_List").value = StringTest;
+};
+window.axisHelper = function () {
+  var AxischeckBox = document.getElementById("axis");
 
-}
-window.axisHelper = function() {
-  var AxischeckBox = document.getElementById("axis")
-  
-  if(AxischeckBox.checked == true ){
-    const axesHelper = new THREE.AxesHelper( 250 );
-    axesHelper.position.set (0,0,0);
+  if (AxischeckBox.checked == true) {
+    const axesHelper = new THREE.AxesHelper(250);
+    axesHelper.position.set(0, 0, 0);
     scene.add(axesHelper);
-  }else if(AxischeckBox.checked == false ){
-    scene.remove( axesHelper ); // why is this not working
+  } else if (AxischeckBox.checked == false) {
+    scene.remove(axesHelper); // why is this not working
   }
-
-}
-window.boundsBoxView = function() {
-  var BoundscheckBox = document.getElementById("box")
-  if(BoundscheckBox.checked == true){
-    scene.add( helper );
+};
+window.boundsBoxView = function () {
+  var BoundscheckBox = document.getElementById("box");
+  if (BoundscheckBox.checked == true) {
+    scene.add(helper);
     console.log("wooooooooo");
-  }else{
-    scene.remove( helper );
+  } else {
+    scene.remove(helper);
   }
-}
+};
 
-
-
-window.reload = function() {
+window.reload = function () {
   Initialisation();
-}
-
-
+};
 
 function Initialisation() {
   //choice = document.getElementById('newone');
@@ -154,8 +142,6 @@ function Initialisation() {
   // Scene
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000000);
-
-
 
   // Camera
   camera = new THREE.PerspectiveCamera(
@@ -208,15 +194,13 @@ function Initialisation() {
   camera.add(light);
   scene.add(new THREE.AmbientLight(0xffffff, 0.2)); // ambient
 
-
-
   //loads the model this is okay for prototype purposes but will need to be dynamic and probably enterned by the user.
- // let model = "models/Vesta_1_100.glb";
+  // let model = "models/Vesta_1_100.glb";
   GLTF_Loader(); // Call the loader function.
 
-  const axesHelper = new THREE.AxesHelper( 250 );
-  axesHelper.position.set (0,0,0);
-  scene.add( axesHelper );
+  const axesHelper = new THREE.AxesHelper(250);
+  axesHelper.position.set(0, 0, 0);
+  scene.add(axesHelper);
   scene.remove(axesHelper);
 
   //Intersection check function
@@ -272,58 +256,53 @@ function Initialisation() {
   });
 
   window.addEventListener("pointerup", function (event) {
-   // console.log(mouse.x, ", ", mouse.y);
-   if (event.shiftKey) {
-    if (moved === false) {
-      Check_Intersection(event.clientX, event.clientY);
-      if (intersection.intersects && choice.value == 1) { //&& choice.value == 1) {
-       // console.log(mouseHelper.position);
-        place();
-        
+    // console.log(mouse.x, ", ", mouse.y);
+    if (event.shiftKey) {
+      if (moved === false) {
+        Check_Intersection(event.clientX, event.clientY);
+        if (intersection.intersects && choice.value == 1) {
+          //&& choice.value == 1) {
+          // console.log(mouseHelper.position);
+          place();
 
-        document.getElementById("mX").value = mouseHelper.position.x;
-        document.getElementById("mY").value = mouseHelper.position.y;
-        document.getElementById("mZ").value = mouseHelper.position.z;
+          document.getElementById("mX").value = mouseHelper.position.x;
+          document.getElementById("mY").value = mouseHelper.position.y;
+          document.getElementById("mZ").value = mouseHelper.position.z;
 
-        document.getElementById("mLAT").value = Glat;
-        document.getElementById("mLNG").value = Glng;
+          document.getElementById("mLAT").value = Glat;
+          document.getElementById("mLNG").value = Glng;
 
-     //   document.getElementById("List").value = StringTest2;
-        
-        list.insertFirst(2,Glat,Glng,40,0,1);
-        console.log(StringTest2);
+          //   document.getElementById("List").value = StringTest2;
 
-        Coordinates_Converter();
-      } else if (intersection.intersects && choice.value == 0) {
-       // console.log(mouseHelper.position);
-        place_rock();
-        
+          list.insertFirst(2, Glat, Glng, 40, 0, 1);
+          console.log(StringTest2);
 
-        document.getElementById("mX").value = mouseHelper.position.x;
-        document.getElementById("mY").value = mouseHelper.position.y;
-        document.getElementById("mZ").value = mouseHelper.position.z;
-       
-        document.getElementById("mLAT").value = Glat;
-        document.getElementById("mLNG").value = Glng;
-      
-       // document.getElementById("List").value = StringTest;
-        
-       
-        //add to list
-        list.insertFirst(rockID, 1,Glat,Glng,40,0,1);
-        console.log(rockID);
+          Coordinates_Converter();
+        } else if (intersection.intersects && choice.value == 0) {
+          // console.log(mouseHelper.position);
+          place_rock();
 
-        //listTest();
+          document.getElementById("mX").value = mouseHelper.position.x;
+          document.getElementById("mY").value = mouseHelper.position.y;
+          document.getElementById("mZ").value = mouseHelper.position.z;
 
-         // console.log(StringTest);
+          document.getElementById("mLAT").value = Glat;
+          document.getElementById("mLNG").value = Glng;
 
-         
-        
-         // currently not working with spheres possibly to do with the normilisation process ?
-         //works when moced into the place rock function
+          // document.getElementById("List").value = StringTest;
 
+          //add to list
+          list.insertFirst(rockID, 1, Glat, Glng, 40, 0, 1);
+          console.log(rockID);
+
+          //listTest();
+
+          // console.log(StringTest);
+
+          // currently not working with spheres possibly to do with the normilisation process ?
+          //works when moced into the place rock function
+        }
       }
-    }
     }
   });
 
@@ -339,24 +318,19 @@ function Initialisation() {
   window.addEventListener("resize", Window_Resize);
 }
 
-
 //loads fiels in a gltf format
 function GLTF_Loader() {
   const loader = new GLTFLoader();
 
-  loader.parse(obj, "", (gltf) => { 
-  mesh = gltf.scene.children[0];
-
+  loader.parse(obj, "", (gltf) => {
+    mesh = gltf.scene.children[0];
 
     scene.add(mesh);
 
     mesh.scale.set(0.4, 0.4, 0.4);
     mesh.userData.asteroid = true;
-    
   });
-
 }
-
 
 function place() {
   position.copy(intersection.point);
@@ -364,10 +338,8 @@ function place() {
 
   if (params.rotate) orientation.z = Math.random() * 2 * Math.PI;
 
-  
-
   const scale = place_size + 0.02;
-  size.set( scale, scale, scale );
+  size.set(scale, scale, scale);
 
   const material = new THREE.MeshBasicMaterial({
     color: 0xffff00,
@@ -389,7 +361,7 @@ function place() {
     new DecalGeometry(mesh, position, orientation, size),
     material
   );
-
+  m.userData.draggable = true;
   //  const m = new THREE.Mesh( new THREE.BoxGeometry( 100,100,100), new THREE.MeshNormalMaterial());
   // m.position.set(position);
   // decals.push( m );
@@ -397,7 +369,7 @@ function place() {
   console.log(m.scale);
 }
 var rockID = 0;
-const rockList=[];
+const rockList = [];
 function place_rock() {
   const loader = new GLTFLoader();
   loader.load("models/Bennu_1_1.glb", function (gltf) {
@@ -424,23 +396,21 @@ function place_rock() {
     });
     rockmesh.material.opacity = 0.5;
     scene.add(rockmesh);
-  
- 
+
     rockmesh.scale.set(place_size / 100, place_size / 100, place_size / 100);
 
-    const uuid = rockmesh.uuid
+    const uuid = rockmesh.uuid;
 
     rockList[uuid] = {
-      model:gltf,
+      model: gltf,
       mydata: {
-      //place: holder,
-      }
-    }
+        //place: holder,
+      },
+    };
     rockmesh.userData.draggable = true;
     rockID = uuid;
     Coordinates_Converter();
     sizeCheck();
-
   });
 }
 
@@ -461,149 +431,137 @@ function Animation() {
   renderer.render(scene, camera);
 }
 
-
 /**
  * converts a XYZ THREE.Vector3 to longitude latitude. beware, the vector3 will be normalized!
- * @param vector3 
+ * @param vector3
  * @returns an array containing the longitude [0] & the lattitude [1] of the Vector3
  * from https://gist.github.com/nicoptere/2f2571db4b454bb18cd9
  */
 function Coordinates_Converter() {
-
-  mouseHelper.position.normalize(); // removes decimal places for the vector 
+  mouseHelper.position.normalize(); // removes decimal places for the vector
 
   //longitude = angle of the vector around the Y axis
   //-( ) : negate to flip the longitude (3d space specific )
   //- PI / 2 to face the Z axis
-  var lng = -( Math.atan2( -mouseHelper.position.z, -mouseHelper.position.x ) ) - Math.PI / 2;
+  var lng =
+    -Math.atan2(-mouseHelper.position.z, -mouseHelper.position.x) - Math.PI / 2;
 
   //to bind between -PI / PI
-  if( lng < - Math.PI )lng += Math.PI * 2;
+  if (lng < -Math.PI) lng += Math.PI * 2;
 
   //latitude : angle between the vector & the vector projected on the XZ plane on a unit sphere
 
   //project on the XZ plane
-  var p = new THREE.Vector3( mouseHelper.position.x, 0, mouseHelper.position.z );
+  var p = new THREE.Vector3(mouseHelper.position.x, 0, mouseHelper.position.z);
   //project on the unit sphere
   p.normalize();
 
   //commpute the angle ( both vectors are normalized, no division by the sum of lengths )
-  var lat = Math.acos( p.dot( mouseHelper.position ) );
+  var lat = Math.acos(p.dot(mouseHelper.position));
 
   //invert if Y is negative to ensure teh latitude is comprised between -PI/2 & PI / 2
-  if( mouseHelper.position.y < 0 ) lat *= -1;
-
+  if (mouseHelper.position.y < 0) lat *= -1;
 
   //Convert from raidains to degtrees
-  lat = lat * 180.0/Math.PI; 
-  lng = lng * 180.0/Math.PI; 
+  lat = (lat * 180.0) / Math.PI;
+  lng = (lng * 180.0) / Math.PI;
 
-
-  if (lng < 0){ //corrects the lng not letting it become a minus num
+  if (lng < 0) {
+    //corrects the lng not letting it become a minus num
     lng = lng + 360;
   }
 
-  Glat = lat ;
-  Glng = lng ;
+  Glat = lat;
+  Glng = lng;
 
   //document.getElementById("mLNG").value = Glng;
   //document.getElementById("mLAT").value = Glat;
-  console.log("long and lat : ",lng,lat);
+  console.log("long and lat : ", lng, lat);
 
-
-  return [ lng,lat ];
-
-
+  return [lng, lat];
 }
 
 var obj;
 var threeObject;
 
 const input = document.querySelector('input[type="file"]');
-input.addEventListener('change', function(e) {
-
-    console.log(input.files)
+input.addEventListener(
+  "change",
+  function (e) {
+    console.log(input.files);
     const reader = new FileReader();
 
     reader.onload = function () {
-        
+      obj = reader.result;
+      threeObject = URL.createObjectURL(input.files[0]);
+      console.log(obj);
+      console.log(threeObject);
+      Initialisation();
+    };
 
-        obj = reader.result;
-        threeObject = URL.createObjectURL(input.files[0]);
-        console.log(obj);
-        console.log(threeObject);
-        Initialisation();
-
-    }
-
-    
     reader.readAsArrayBuffer(input.files[0]);
-  
-    
-
-},false)
+  },
+  false
+);
 
 //Click and Drag Ray cast
-
 
 const rockRaycaster = new THREE.Raycaster();
 const clickMouse = new THREE.Vector2();
 const mouseMove = new THREE.Vector2();
 var draggable = new THREE.Object3D();
 
-window.addEventListener('contextmenu' ,function(event) {
-  //make a non selected rock light again
- 
-    console.log("rightclick")
-    if(draggable){
-      
-      console.log("Dropping :  " + rockID)
+window.addEventListener(
+  "contextmenu",
+  function (event) {
+    //make a non selected rock light again
+
+    console.log("rightclick");
+    if (draggable) {
+      console.log("Dropping :  " + rockID);
       draggable = null;
-      
-      return
+
+      return;
     }
 
+    clickMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    clickMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  clickMouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	clickMouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    rockRaycaster.setFromCamera(clickMouse, camera);
+    const found = rockRaycaster.intersectObjects(scene.children);
+    if (found.length > 0 && found[0].object.userData.draggable) {
+      draggable = found[0].object;
+      found[0].object.material.opacity = 1;
+      console.log("found draggable rock : " + rockID);
+    }
+  },
+  false
+);
 
-	rockRaycaster.setFromCamera( clickMouse, camera );
-  const found = rockRaycaster.intersectObjects( scene.children );
-  if(found.length > 0 && found[0].object.userData.draggable) {
-    draggable = found[0].object;
-    found[0].object.material.opacity = 1;
-    console.log("found draggable rock : " + rockID);
-  }
-  
-},false
-)
-
-window.addEventListener(mouseMove, event => {
-  mouseMove.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouseMove.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-})
+window.addEventListener(mouseMove, (event) => {
+  mouseMove.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouseMove.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
 
 //try match this up to the helper ??
-function dragObject () {
-  if(draggable != null) {
-    rockRaycaster.setFromCamera(mouseMove, camera)
-    const found = rockRaycaster.intersectObjects(scene.children)
-    if(found.length > 0){
-      for(let o of found) {
-        if (!o.object.userData.asteroid){
-        continue;
+function dragObject() {
+  if (draggable != null) {
+    rockRaycaster.setFromCamera(mouseMove, camera);
+    const found = rockRaycaster.intersectObjects(scene.children);
+    if (found.length > 0) {
+      for (let o of found) {
+        if (!o.object.userData.asteroid) {
+          continue;
         } else {
-      
-        draggable.position.x = o.point.x;
-        draggable.position.y = o.point.y;
-        draggable.position.z = o.point.z;
-/*
+          draggable.position.x = o.point.x;
+          draggable.position.y = o.point.y;
+          draggable.position.z = o.point.z;
+          /*
         draggable.position.x = mouseHelper.position.x;
         draggable.position.y = mouseHelper.position.y;
         draggable.position.z = mouseHelper.position.z;
-*/      
+*/
         }
-
       }
     }
   }
@@ -611,18 +569,13 @@ function dragObject () {
 
 //Size checker(toggle box)
 const boundsBox = new THREE.Box3();
-const helper = new THREE.Box3Helper( boundsBox, 0xffff00 );
+const helper = new THREE.Box3Helper(boundsBox, 0xffff00);
 
-function sizeCheck(){
-
-boundsBox.setFromObject(mesh, true);
-console.log(boundsBox.min + "  " + boundsBox.max)
-scene.add( helper );
-console.log(helper.scale.x + "  " + helper.scale.y+ "  " + helper.scale.z)
-scene.remove( helper );
+function sizeCheck() {
+  boundsBox.setFromObject(mesh, true);
+  console.log(boundsBox.min + "  " + boundsBox.max);
+  scene.add(helper);
+  console.log(helper.scale.x + "  " + helper.scale.y + "  " + helper.scale.z);
+  scene.remove(helper);
 }
 //check box for axis guids
-
-
-
-
