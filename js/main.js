@@ -103,6 +103,28 @@ window.printList = function(StringTest) {
   document.getElementById('Coord_List').value = StringTest;
 
 }
+window.axisHelper = function() {
+  var AxischeckBox = document.getElementById("axis")
+  
+  if(AxischeckBox.checked == true ){
+    const axesHelper = new THREE.AxesHelper( 250 );
+    axesHelper.position.set (0,0,0);
+    scene.add(axesHelper);
+  }else if(AxischeckBox.checked == false ){
+    scene.remove( axesHelper ); // why is this not working
+  }
+
+}
+window.boundsBoxView = function() {
+  var BoundscheckBox = document.getElementById("box")
+  if(BoundscheckBox.checked == true){
+    scene.add( helper );
+    console.log("wooooooooo");
+  }else{
+    scene.remove( helper );
+  }
+}
+
 
 
 window.reload = function() {
@@ -192,9 +214,10 @@ function Initialisation() {
  // let model = "models/Vesta_1_100.glb";
   GLTF_Loader(); // Call the loader function.
 
-  const axesHelper = new THREE.AxesHelper( 5 );
-  axesHelper.position.set (200,-100,0);
+  const axesHelper = new THREE.AxesHelper( 250 );
+  axesHelper.position.set (0,0,0);
   scene.add( axesHelper );
+  scene.remove(axesHelper);
 
   //Intersection check function
   function Check_Intersection(x, y) {
@@ -250,7 +273,7 @@ function Initialisation() {
 
   window.addEventListener("pointerup", function (event) {
    // console.log(mouse.x, ", ", mouse.y);
- 
+   if (event.shiftKey) {
     if (moved === false) {
       Check_Intersection(event.clientX, event.clientY);
       if (intersection.intersects && choice.value == 1) { //&& choice.value == 1) {
@@ -298,7 +321,9 @@ function Initialisation() {
         
          // currently not working with spheres possibly to do with the normilisation process ?
          //works when moced into the place rock function
+
       }
+    }
     }
   });
 
@@ -324,9 +349,12 @@ function GLTF_Loader() {
 
 
     scene.add(mesh);
+
     mesh.scale.set(0.4, 0.4, 0.4);
+    mesh.userData.asteroid = true;
     
   });
+
 }
 
 
@@ -408,8 +436,10 @@ function place_rock() {
       //place: holder,
       }
     }
-   rockID = uuid;
+    rockmesh.userData.draggable = true;
+    rockID = uuid;
     Coordinates_Converter();
+    sizeCheck();
 
   });
 }
@@ -426,6 +456,7 @@ function Window_Resize() {
 
 //Animation function
 function Animation() {
+  dragObject();
   requestAnimationFrame(Animation);
   renderer.render(scene, camera);
 }
@@ -511,5 +542,87 @@ input.addEventListener('change', function(e) {
     
 
 },false)
+
+//Click and Drag Ray cast
+
+
+const rockRaycaster = new THREE.Raycaster();
+const clickMouse = new THREE.Vector2();
+const mouseMove = new THREE.Vector2();
+var draggable = new THREE.Object3D();
+
+window.addEventListener('contextmenu' ,function(event) {
+  //make a non selected rock light again
+ 
+    console.log("rightclick")
+    if(draggable){
+      
+      console.log("Dropping :  " + rockID)
+      draggable = null;
+      
+      return
+    }
+
+
+  clickMouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	clickMouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+	rockRaycaster.setFromCamera( clickMouse, camera );
+  const found = rockRaycaster.intersectObjects( scene.children );
+  if(found.length > 0 && found[0].object.userData.draggable) {
+    draggable = found[0].object;
+    found[0].object.material.opacity = 1;
+    console.log("found draggable rock : " + rockID);
+  }
+  
+},false
+)
+
+window.addEventListener(mouseMove, event => {
+  mouseMove.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouseMove.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+})
+
+//try match this up to the helper ??
+function dragObject () {
+  if(draggable != null) {
+    rockRaycaster.setFromCamera(mouseMove, camera)
+    const found = rockRaycaster.intersectObjects(scene.children)
+    if(found.length > 0){
+      for(let o of found) {
+        if (!o.object.userData.asteroid){
+        continue;
+        } else {
+      
+        draggable.position.x = o.point.x;
+        draggable.position.y = o.point.y;
+        draggable.position.z = o.point.z;
+/*
+        draggable.position.x = mouseHelper.position.x;
+        draggable.position.y = mouseHelper.position.y;
+        draggable.position.z = mouseHelper.position.z;
+*/      
+        }
+
+      }
+    }
+  }
+}
+
+//Size checker(toggle box)
+const boundsBox = new THREE.Box3();
+const helper = new THREE.Box3Helper( boundsBox, 0xffff00 );
+
+function sizeCheck(){
+
+boundsBox.setFromObject(mesh, true);
+console.log(boundsBox.min + "  " + boundsBox.max)
+scene.add( helper );
+console.log(helper.scale.x + "  " + helper.scale.y+ "  " + helper.scale.z)
+scene.remove( helper );
+}
+//check box for axis guids
+
+
 
 
