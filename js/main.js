@@ -8,7 +8,7 @@ import * as THREE from "https://cdn.skypack.dev/three@0.133.0";
 import { OrbitControls } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/GLTFLoader.js";
 import { DecalGeometry } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples//jsm/geometries/DecalGeometry.js";
-
+import { DRACOLoader } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/DRACOLoader.js';
 /*
                 TODO
 move the file saveing stuff in here after 
@@ -124,7 +124,7 @@ window.reload = function () {
 function Initialisation() {
   //choice = document.getElementById('newone');
   console.log(choice);
-
+  list.insertFirst(0, 0, 0, 0, 0, 1);
   // Renderer for the actual obejct contatiner.
   renderer = new THREE.WebGLRenderer();
   /*
@@ -322,13 +322,18 @@ function Initialisation() {
 function GLTF_Loader() {
   const loader = new GLTFLoader();
 
+
+
   loader.parse(obj, "", (gltf) => {
     mesh = gltf.scene.children[0];
-
     scene.add(mesh);
-
-    mesh.scale.set(0.4, 0.4, 0.4);
+    mesh.scale.set(0.5, 0.5, 0.5);
     mesh.userData.asteroid = true;
+    
+    mesh.traverse( child => {
+      console.log('element: ', child.name, child.scale )
+     })
+
   });
 }
 
@@ -516,23 +521,27 @@ window.addEventListener(
   function (event) {
     //make a non selected rock light again
 
-    console.log("rightclick");
-    if (draggable) {
-      console.log("Dropping :  " + rockID);
-      draggable = null;
 
-      return;
-    }
 
     clickMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     clickMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     rockRaycaster.setFromCamera(clickMouse, camera);
-    const found = rockRaycaster.intersectObjects(scene.children);
+    const found = rockRaycaster.intersectObjects(scene.children,true);
+  //  console.log("rightclick");
+
+    if (draggable) {
+ //     console.log("Dropping :  " + rockID);
+      found[0].object.material.opacity = 0.5;
+      draggable = null;
+      
+      return;
+    } 
+
     if (found.length > 0 && found[0].object.userData.draggable) {
       draggable = found[0].object;
-      found[0].object.material.opacity = 1;
-      console.log("found draggable rock : " + rockID);
+      found[0].object.material.opacity = 0.9;
+ //     console.log("found draggable rock : " + rockID);
     }
   },
   false
@@ -570,12 +579,35 @@ function dragObject() {
 //Size checker(toggle box)
 const boundsBox = new THREE.Box3();
 const helper = new THREE.Box3Helper(boundsBox, 0xffff00);
-
+var Osize;
 function sizeCheck() {
   boundsBox.setFromObject(mesh, true);
-  console.log(boundsBox.min + "  " + boundsBox.max);
+
+
   scene.add(helper);
   console.log(helper.scale.x + "  " + helper.scale.y + "  " + helper.scale.z);
+
+  console.log();
   scene.remove(helper);
 }
 //check box for axis guids
+/*
+function GLTF_Loader() {
+  const loader = new GLTFLoader();
+
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath( 'js/libs/draco/' );
+  dracoLoader.setDecoderConfig( { type: 'js' } );
+
+  dracoLoader.parse(obj, "", (gltf) => {
+    mesh = gltf.scene.children[0];
+    scene.add(mesh);
+    mesh.scale.set(0.004, 0.004, 0.004);
+    mesh.userData.asteroid = true;
+    
+    mesh.traverse( child => {
+      console.log('element: ', child.name, child.scale )
+     })
+  });
+}
+*/
