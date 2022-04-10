@@ -281,7 +281,7 @@ function Initialisation() {
           //   Coordinates_Converter();
         } else if (intersection.intersects && choice.value == 0) {
           // console.log(mouseHelper.position);
-          
+
           const rockList = [];
           const loader = new GLTFLoader();
           var rockID = 0;
@@ -320,9 +320,8 @@ function Initialisation() {
             sizeCheck();
             console.log(rockID);
             list.insertFirst(rockID, 1, Glat, Glng, 40, 0, 1);
-            
           });
-          
+
           // await 1;
           Coordinates_Converter();
 
@@ -334,8 +333,7 @@ function Initialisation() {
           document.getElementById("mLNG").value = Glng;
 
           //add to list
-         // object.userData.draggable
-
+          // object.userData.draggable
         }
       }
     }
