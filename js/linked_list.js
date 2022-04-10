@@ -11,7 +11,6 @@ class linkedList {
     //Insert first.
     insertFirst(ID, type, Nlat, Nlng, size, depth, index) {
         this.head = new node(ID, type, Nlat, Nlng, size, depth, index,this.head);
-  
         this.size++;
     }
   

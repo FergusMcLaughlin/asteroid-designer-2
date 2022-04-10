@@ -8,7 +8,7 @@ import * as THREE from "https://cdn.skypack.dev/three@0.133.0";
 import { OrbitControls } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/GLTFLoader.js";
 import { DecalGeometry } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples//jsm/geometries/DecalGeometry.js";
-import { DRACOLoader } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/DRACOLoader.js';
+//import { DRACOLoader } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/DRACOLoader.js';
 /*
                 TODO
 move the file saveing stuff in here after 
@@ -28,6 +28,7 @@ var Glat;
 var Glng;
 var choice = 1;
 var place_size;
+let rockID = 0;
 
 //Testing
 var place_mode;
@@ -124,7 +125,7 @@ window.reload = function () {
 function Initialisation() {
   //choice = document.getElementById('newone');
   console.log(choice);
-  list.insertFirst(0, 0, 0, 0, 0, 1);
+
   // Renderer for the actual obejct contatiner.
   renderer = new THREE.WebGLRenderer();
   /*
@@ -277,10 +278,53 @@ function Initialisation() {
           list.insertFirst(2, Glat, Glng, 40, 0, 1);
           console.log(StringTest2);
 
-          Coordinates_Converter();
+          //   Coordinates_Converter();
         } else if (intersection.intersects && choice.value == 0) {
           // console.log(mouseHelper.position);
-          place_rock();
+          
+          const rockList = [];
+          const loader = new GLTFLoader();
+          var rockID = 0;
+          loader.load("models/Bennu_1_1.glb", function (gltf) {
+            rockmesh = gltf.scene.children[0];
+
+            const uuid = rockmesh.uuid;
+            rockList[uuid] = {
+              model: gltf,
+              mydata: {
+                //place: holder,
+              },
+            };
+            rockID = uuid;
+            rockmesh.position.set(
+              mouseHelper.position.x,
+              mouseHelper.position.y,
+              mouseHelper.position.z
+            );
+
+            rockmesh.material = new THREE.MeshBasicMaterial({
+              color: 0xffff00,
+              wireframe: false,
+              opacity: 0.5,
+              transparent: true,
+            });
+            rockmesh.material.opacity = 0.5;
+            scene.add(rockmesh);
+
+            rockmesh.scale.set(
+              place_size / 100,
+              place_size / 100,
+              place_size / 100
+            );
+            rockmesh.userData.draggable = true;
+            sizeCheck();
+            console.log(rockID);
+            list.insertFirst(rockID, 1, Glat, Glng, 40, 0, 1);
+            
+          });
+          
+          // await 1;
+          Coordinates_Converter();
 
           document.getElementById("mX").value = mouseHelper.position.x;
           document.getElementById("mY").value = mouseHelper.position.y;
@@ -289,18 +333,9 @@ function Initialisation() {
           document.getElementById("mLAT").value = Glat;
           document.getElementById("mLNG").value = Glng;
 
-          // document.getElementById("List").value = StringTest;
-
           //add to list
-          list.insertFirst(rockID, 1, Glat, Glng, 40, 0, 1);
-          console.log(rockID);
+         // object.userData.draggable
 
-          //listTest();
-
-          // console.log(StringTest);
-
-          // currently not working with spheres possibly to do with the normilisation process ?
-          //works when moced into the place rock function
         }
       }
     }
@@ -318,22 +353,80 @@ function Initialisation() {
   window.addEventListener("resize", Window_Resize);
 }
 
+/**
+ * converts a XYZ THREE.Vector3 to longitude latitude. beware, the vector3 will be normalized!
+ * @param vector3
+ * @returns an array containing the longitude [0] & the lattitude [1] of the Vector3
+ * from https://gist.github.com/nicoptere/2f2571db4b454bb18cd9
+ */
+const BufferPosition = new THREE.BoxGeometry(1, 1, 1);
+const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+function Coordinates_Converter() {
+  const cube = new THREE.Mesh(BufferPosition, material2);
+  cube.position.set(
+    mouseHelper.position.x,
+    mouseHelper.position.y,
+    mouseHelper.position.z
+  );
+  scene.add(cube);
+
+  cube.position.normalize(); // removes decimal places for the vector
+
+  console.log(cube.position.x, cube.position.y, cube.position.z);
+  //longitude = angle of the vector around the Y axis
+  //-( ) : negate to flip the longitude (3d space specific )
+  //- PI / 2 to face the Z axis
+  var lng = -Math.atan2(-cube.position.z, -cube.position.x) - Math.PI / 2;
+
+  //to bind between -PI / PI
+  if (lng < -Math.PI) lng += Math.PI * 2;
+
+  //latitude : angle between the vector & the vector projected on the XZ plane on a unit sphere
+
+  //project on the XZ plane
+  var p = new THREE.Vector3(cube.position.x, 0, cube.position.z);
+  //project on the unit sphere
+  p.normalize();
+
+  //commpute the angle ( both vectors are normalized, no division by the sum of lengths )
+  var lat = Math.acos(p.dot(cube.position));
+
+  //invert if Y is negative to ensure teh latitude is comprised between -PI/2 & PI / 2
+  if (cube.position.y < 0) lat *= -1;
+
+  //Convert from raidains to degtrees
+  lat = (lat * 180.0) / Math.PI;
+  lng = (lng * 180.0) / Math.PI;
+
+  if (lng < 0) {
+    //corrects the lng not letting it become a minus num
+    lng = lng + 360;
+  }
+
+  Glat = lat;
+  Glng = lng;
+
+  //document.getElementById("mLNG").value = Glng;
+  //document.getElementById("mLAT").value = Glat;
+  console.log("long and lat : ", lng, lat);
+
+  return [lng, lat];
+}
+
 //loads fiels in a gltf format
 function GLTF_Loader() {
   const loader = new GLTFLoader();
-
-
 
   loader.parse(obj, "", (gltf) => {
     mesh = gltf.scene.children[0];
     scene.add(mesh);
     mesh.scale.set(0.5, 0.5, 0.5);
     mesh.userData.asteroid = true;
-    
-    mesh.traverse( child => {
-      console.log('element: ', child.name, child.scale )
-     })
 
+    mesh.traverse((child) => {
+      console.log("element: ", child.name, child.scale);
+    });
   });
 }
 
@@ -373,51 +466,6 @@ function place() {
   scene.add(m);
   console.log(m.scale);
 }
-var rockID = 0;
-const rockList = [];
-function place_rock() {
-  const loader = new GLTFLoader();
-  loader.load("models/Bennu_1_1.glb", function (gltf) {
-    rockmesh = gltf.scene.children[0];
-
-    // position.copy(intersection.point);
-    // orientation.copy(mouseHelper.rotation);
-
-    //rockmesh.position.set(intersection.point);
-    rockmesh.position.set(
-      mouseHelper.position.x,
-      mouseHelper.position.y,
-      mouseHelper.position.z
-    );
-    // if (params.rotate) orientation.z = Math.random() * 2 * Math.PI;
-    // rockmesh.orientation.set(mouseHelper.rotation);
-    //position.copy(intersection.point);
-    //orientation.copy(mouseHelper.rotation);
-    rockmesh.material = new THREE.MeshBasicMaterial({
-      color: 0xffff00,
-      wireframe: false,
-      opacity: 0.5,
-      transparent: true,
-    });
-    rockmesh.material.opacity = 0.5;
-    scene.add(rockmesh);
-
-    rockmesh.scale.set(place_size / 100, place_size / 100, place_size / 100);
-
-    const uuid = rockmesh.uuid;
-
-    rockList[uuid] = {
-      model: gltf,
-      mydata: {
-        //place: holder,
-      },
-    };
-    rockmesh.userData.draggable = true;
-    rockID = uuid;
-    Coordinates_Converter();
-    sizeCheck();
-  });
-}
 
 //Updates on Window Resize
 function Window_Resize() {
@@ -434,56 +482,6 @@ function Animation() {
   dragObject();
   requestAnimationFrame(Animation);
   renderer.render(scene, camera);
-}
-
-/**
- * converts a XYZ THREE.Vector3 to longitude latitude. beware, the vector3 will be normalized!
- * @param vector3
- * @returns an array containing the longitude [0] & the lattitude [1] of the Vector3
- * from https://gist.github.com/nicoptere/2f2571db4b454bb18cd9
- */
-function Coordinates_Converter() {
-  mouseHelper.position.normalize(); // removes decimal places for the vector
-
-  //longitude = angle of the vector around the Y axis
-  //-( ) : negate to flip the longitude (3d space specific )
-  //- PI / 2 to face the Z axis
-  var lng =
-    -Math.atan2(-mouseHelper.position.z, -mouseHelper.position.x) - Math.PI / 2;
-
-  //to bind between -PI / PI
-  if (lng < -Math.PI) lng += Math.PI * 2;
-
-  //latitude : angle between the vector & the vector projected on the XZ plane on a unit sphere
-
-  //project on the XZ plane
-  var p = new THREE.Vector3(mouseHelper.position.x, 0, mouseHelper.position.z);
-  //project on the unit sphere
-  p.normalize();
-
-  //commpute the angle ( both vectors are normalized, no division by the sum of lengths )
-  var lat = Math.acos(p.dot(mouseHelper.position));
-
-  //invert if Y is negative to ensure teh latitude is comprised between -PI/2 & PI / 2
-  if (mouseHelper.position.y < 0) lat *= -1;
-
-  //Convert from raidains to degtrees
-  lat = (lat * 180.0) / Math.PI;
-  lng = (lng * 180.0) / Math.PI;
-
-  if (lng < 0) {
-    //corrects the lng not letting it become a minus num
-    lng = lng + 360;
-  }
-
-  Glat = lat;
-  Glng = lng;
-
-  //document.getElementById("mLNG").value = Glng;
-  //document.getElementById("mLAT").value = Glat;
-  console.log("long and lat : ", lng, lat);
-
-  return [lng, lat];
 }
 
 var obj;
@@ -521,27 +519,25 @@ window.addEventListener(
   function (event) {
     //make a non selected rock light again
 
-
-
     clickMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     clickMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     rockRaycaster.setFromCamera(clickMouse, camera);
-    const found = rockRaycaster.intersectObjects(scene.children,true);
-  //  console.log("rightclick");
+    const found = rockRaycaster.intersectObjects(scene.children, true);
+    //  console.log("rightclick");
 
     if (draggable) {
- //     console.log("Dropping :  " + rockID);
+      //     console.log("Dropping :  " + rockID);
       found[0].object.material.opacity = 0.5;
       draggable = null;
-      
+
       return;
-    } 
+    }
 
     if (found.length > 0 && found[0].object.userData.draggable) {
       draggable = found[0].object;
       found[0].object.material.opacity = 0.9;
- //     console.log("found draggable rock : " + rockID);
+      //     console.log("found draggable rock : " + rockID);
     }
   },
   false
@@ -583,7 +579,6 @@ var Osize;
 function sizeCheck() {
   boundsBox.setFromObject(mesh, true);
 
-
   scene.add(helper);
   console.log(helper.scale.x + "  " + helper.scale.y + "  " + helper.scale.z);
 
@@ -610,4 +605,60 @@ function GLTF_Loader() {
      })
   });
 }
+*/
+
+/*
+
+const rockList = [];
+//var rockID = uuid;
+function place_rock() {
+  console.log("ROCK : ",mouseHelper.position.x,mouseHelper.position.y,mouseHelper.position.z);
+
+  const loader = new GLTFLoader();
+  loader.load("models/Bennu_1_1.glb", function (gltf) {
+    rockmesh = gltf.scene.children[0];
+    const uuid = rockmesh.uuid;
+
+    rockList[uuid] = {
+      model: gltf,
+      mydata: {
+        //place: holder,
+      },
+    };
+    rockID = uuid;
+    console.log("ROCKID : ", uuid);
+    // position.copy(intersection.point);
+    // orientation.copy(mouseHelper.rotation);
+
+    //rockmesh.position.set(intersection.point);
+    rockmesh.position.set(
+      mouseHelper.position.x,
+      mouseHelper.position.y,
+      mouseHelper.position.z
+    );
+    // if (params.rotate) orientation.z = Math.random() * 2 * Math.PI;
+    // rockmesh.orientation.set(mouseHelper.rotation);
+    //position.copy(intersection.point);
+    //orientation.copy(mouseHelper.rotation);
+    rockmesh.material = new THREE.MeshBasicMaterial({
+      color: 0xffff00,
+      wireframe: false,
+      opacity: 0.5,
+      transparent: true,
+    });
+    rockmesh.material.opacity = 0.5;
+    scene.add(rockmesh);
+  //  Coordinates_Converter();
+    rockmesh.scale.set(place_size / 100, place_size / 100, place_size / 100);
+
+
+    rockmesh.userData.draggable = true;
+    
+   
+    sizeCheck();
+    console.log("ROCKID : ", uuid);
+  return uuid;
+  });
+}
+
 */
