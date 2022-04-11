@@ -12,7 +12,7 @@
     <script src="http://cdn.jsdelivr.net/g/filesaver.js"></script>
     <script src="js/node.js"></script>
     <script src="js/linked_list.js"></script>
-    <script src="js/list_printer.js"></script>
+    <script type="module" src="js/list_printer.js"></script>
 
     <title>Asteroid Prototype</title>
   </head>
@@ -40,7 +40,8 @@
        
       <!--  <textarea  id="List" type="text" value="" name="longitude" rows="50" cols="50"></textarea> -->
 
-        <button type="button" class="button" onclick="saveDynamicDataToFile();">
+       <!-- <button type="button" class="button" onclick=" saveDynamicDataToFile();">-->
+        <button type="button" class="button" onclick=" locationUpdater();">
           Click to Save
         </button>
       </div>

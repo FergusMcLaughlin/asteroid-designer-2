@@ -123,11 +123,14 @@ class linkedList {
     //stuff is still in mem but this works for now
   }
 
+
+
   printListData() {
+
     let current = this.head;
 
-    boulderString = "\n";
-    craterString = "\n";
+    boulderString = "\t";
+    craterString = "\t";
 
     while (current) {
       if (current.type == 1) {

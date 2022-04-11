@@ -1,9 +1,14 @@
 //this should print the lists with only a button imput from the html.
 
-function saveDynamicDataToFile() {
+//import{locationUpdater}from"./main";
+
+ export function saveDynamicDataToFile() {
   //if mode is 1 then printString = sting1
   //if mode is 2 then printString = string2
-  
+
+
+ // locationUpdater();
+
   list.printListData();
 
   var mouseX = document.getElementById("mX").value;
