@@ -8,6 +8,7 @@ import * as THREE from "https://cdn.skypack.dev/three@0.133.0";
 import { OrbitControls } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/GLTFLoader.js";
 import { DecalGeometry } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples//jsm/geometries/DecalGeometry.js";
+import { createBackground } from '../lib/three-vignette.js';
 //import { DRACOLoader } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/DRACOLoader.js';
 /*
                 TODO
@@ -182,7 +183,7 @@ function Initialisation() {
   );
   //mouseHelper.setColor(0xFFFFFF);
   mouseHelper.visible = true;
-  mouseHelper.userData.asteroid = true;
+  //mouseHelper.userData.asteroid = true;
   scene.add(mouseHelper);
 
   // Controls
@@ -372,7 +373,7 @@ const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
 function Coordinates_Converter() {
   const cube = new THREE.Mesh(BufferPosition, material2);
-  cube.userData.asteroid = true;
+ // cube.userData.asteroid = true;
   cube.position.set(
     mouseHelper.position.x,
     mouseHelper.position.y,
