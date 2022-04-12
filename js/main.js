@@ -8,7 +8,14 @@ import * as THREE from "https://cdn.skypack.dev/three@0.133.0";
 import { OrbitControls } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/GLTFLoader.js";
 import { DecalGeometry } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples//jsm/geometries/DecalGeometry.js";
-import { createBackground } from '../lib/three-vignette.js';
+import { GUI } from 'dat.gui'
+import { OutlinePass  } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/OutlinePass.js";
+import { EffectComposer } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/RenderPass.js';
+//import Stats from '//cdn.jsdelivr.net/gh/Kevnz/stats.js/build/stats.min.js';
+import Stats from '../node_modules/stats-js/src/Stats'; //node_modules\stats-js\src
+//import {createBackground} from '../node_modules/three-vignette-background/index.js';
+// /import createBackground from '../node_modules/three-vignette-background';
 //import { DRACOLoader } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/DRACOLoader.js';
 /*
                 TODO
@@ -24,13 +31,18 @@ let mesh;
 let rockmesh;
 let raycaster;
 let line;
+let outlinePass;
+let composer;
+//var background = createBackground();
 
 var Glat;
 var Glng;
 var choice = 1;
-var place_size;
+var place_size = 1;
+var place_mode = 0;
 let rockID = 0;
 const rockList = [];
+let selectedObject = [];
 
 //Testing
 var place_mode;
@@ -38,6 +50,7 @@ var IDcount;
 var StringTest;
 var StringTest2;
 var StringBuffer;
+let actions, settings;
 
 //export {StringTest as StringTest}; // export IDS without
 export { StringTest2 as StringTest2 };
@@ -56,6 +69,7 @@ const intersects = [];
 let mouseHelper;
 const position = new THREE.Vector3();
 const orientation = new THREE.Euler();
+const gui = new GUI(); //new GUI({autoPlace: false, width: 260, hideable: true});
 
 const size = new THREE.Vector3(8, 8, 8);
 const params = {
@@ -89,14 +103,14 @@ window.onload = function () {
   choice = document.getElementById("modepicker");
   console.log(choice);
 };
-
+/*
 //changes the range slider number
 window.rangeSlide = function (value) {
   document.getElementById("rangeValue").innerHTML = value;
   place_size = value;
   //console.log(place_size);
 };
-
+*/
 window.printList = function (StringTest) {
   document.getElementById("Coord_List").value = StringTest;
 };
@@ -145,7 +159,7 @@ function Initialisation() {
 
   // Scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000);
+  scene.background = new THREE.Color(0x878786);
 
   // Camera
   camera = new THREE.PerspectiveCamera(
@@ -156,7 +170,32 @@ function Initialisation() {
   );
   camera.position.set(0, 0, 300);
   scene.add(camera);
+  
+  //Outline For Moveable Rocks
+/*
+  composer = new EffectComposer( renderer );
 
+  const renderPass = new RenderPass( scene, camera );
+  composer.addPass( renderPass );
+
+  outlinePass = new OutlinePass( new THREE.Vector2( window.innerWidth, window.innerHeight ), scene, camera );
+  composer.addPass( outlinePass );
+  outlinePass.edgeStrength = 4;
+  outlinePass.edgeGlow = 0.5;
+  outlinePass.edgeThickness = 4;
+  outlinePass.visibleEdgeColor = 0xffffff;
+  outlinePass.hiddenEdgeColor = 0x190a05;
+
+  const textureLoader = new THREE.TextureLoader();
+				textureLoader.load( 'images/stars.png', function ( texture ) {
+
+					outlinePass.patternTexture = texture;
+					texture.wrapS = THREE.RepeatWrapping;
+					texture.wrapT = THREE.RepeatWrapping;
+         
+
+        });
+  */
   // Geometry
   // TODO : I think this is to help in drawing the line but I need look at this currently it just works
   const geometry = new THREE.BufferGeometry();
@@ -193,20 +232,102 @@ function Initialisation() {
   controls.maxDistance = 2000;
   controls.enablePan = false;
 
+
   // Lighting
   // TODO: need to change this.
   const light = new THREE.PointLight(0xffffff, 1.5);
   camera.add(light);
   scene.add(new THREE.AmbientLight(0xffffff, 0.2)); // ambient
 
+
   //loads the model this is okay for prototype purposes but will need to be dynamic and probably enterned by the user.
   // let model = "models/Vesta_1_100.glb";
   GLTF_Loader(); // Call the loader function.
 
   const axesHelper = new THREE.AxesHelper(250);
+
   axesHelper.position.set(0, 0, 0);
   scene.add(axesHelper);
   scene.remove(axesHelper);
+
+
+//GUI
+    const placeFolder  = gui.addFolder("Placement Info");
+    const sceneFolder = gui.addFolder("Scene");
+    
+
+    settings = {
+      'Wireframe': false,
+      'Opacity': 1.0,
+      'exportLists': exportLists,
+      'Object Size': 1,
+      'Object Type': "Rock",
+      //'BackGround Colour' : scene.background.color.getHex(),
+
+      //'activate all': activateAllActions,
+     // 'pause/continue': pauseContinue,
+     // 'make single step': toSingleStepMode,
+     // 'modify step size': 0.05,
+    };
+    sceneFolder.add( settings, 'Wireframe' ).onChange( modelWireframe );
+    sceneFolder.add( settings, 'Opacity', 0.0, 0.01, 1.0 ).onChange( modelOpacity );
+    placeFolder.add( settings, 'Object Size', 1.0, 10.0, 1.0 ).onChange( sizeSlider );
+    placeFolder.add( settings, 'Object Type', ['Rock', 'Crater'] ).onChange( TypePicker );
+    sceneFolder.add( settings, 'exportLists');
+   // sceneFolder.addaddColor(new ColorGUIHelper(scene.background,'color'),'value') //
+  //  .name('color')
+  //  .onChange(animationLoop)
+    
+    
+
+    function modelWireframe( choice )
+    {
+      mesh.material.wireframe = choice;
+    }
+
+    function modelOpacity( opacity )
+    {
+      mesh.material.opacity = opacity;
+      console.log(opacity);
+    }
+    function exportLists()
+    {
+      locationUpdater();
+    }
+    function sizeSlider( rockSize )
+    {
+      place_size = rockSize;
+      
+    }
+    function TypePicker( placeType )
+    {
+      if(placeType == "Rock")
+      place_mode = 0;
+      else
+      place_mode = 1;
+      
+    }
+
+/*
+    ColorGUIHelper = class
+    
+    class ColorGUIHelper {
+      constructor(object, prop) {
+        this.object = object;
+        this.prop = prop;
+      }
+      get value() {
+        return `#${this.object[this.prop].getHexString()}`;
+      }
+      set value(hexString) {
+        this.object[this.prop].set(hexString);
+      }
+    }
+
+    sceneFolder.open();
+    placeFolder.open();
+
+*/
 
   //Intersection check function
   function Check_Intersection(x, y) {
@@ -342,7 +463,7 @@ function Initialisation() {
           document.getElementById("mLAT").value = Glat;
           document.getElementById("mLNG").value = Glng;
 
-        //  console.log(rockmesh.uuid);
+          console.log(place_mode);
           //add to list
           // object.userData.draggable
         }
@@ -430,9 +551,11 @@ function GLTF_Loader() {
 
   loader.parse(obj, "", (gltf) => {
     mesh = gltf.scene.children[0];
+
     scene.add(mesh);
     mesh.scale.set(0.5, 0.5, 0.5);
     mesh.userData.asteroid = true;
+    
 
     mesh.traverse((child) => {
    //   console.log("element: ", child.name, child.scale);
@@ -487,11 +610,19 @@ function Window_Resize() {
   Animation();
 }
 
+
+const stats = Stats({autoPlace: false, width: 260} )
+document.body.appendChild(stats.dom)
+
+
+
 //Animation function
 function Animation() {
+ 
   dragObject();
   requestAnimationFrame(Animation);
   renderer.render(scene, camera);
+  stats.update();
 }
 
 var obj;
@@ -523,7 +654,14 @@ const rockRaycaster = new THREE.Raycaster();
 const clickMouse = new THREE.Vector2();
 const mouseMove = new THREE.Vector2();
 var draggable = new THREE.Object3D();
+/*
+function addSelectedObject( object ) {
 
+  selectedObject = [];
+  selectedObject.push( object );
+
+}
+*/
 window.addEventListener(
   "contextmenu",
   function (event) {
@@ -539,7 +677,10 @@ window.addEventListener(
 
     if (draggable) {
       //     console.log("Dropping :  " + rockID);
+      if(found[0].object.userData.moved == true){
       found[0].object.material.opacity = 0.5;
+      
+      }
       //found[0].object.userData.moved = true;
       draggable = null;
 
@@ -550,7 +691,11 @@ window.addEventListener(
       draggable = found[0].object;
       found[0].object.material.opacity = 0.9;
       found[0].object.userData.moved = true;
-
+      /*
+      const sObject = found[ 0 ].object;
+						addSelectedObject( sObject );
+						outlinePass.selectedObjects = selectedObject;
+      */
       console.log(
         found[0].object.uuid,
         " : Has been moved",
@@ -576,9 +721,16 @@ function dragObject() {
         if (!o.object.userData.asteroid) {
           continue;
         } else {
+
+          draggable.position.x = mouseHelper.position.x;
+          draggable.position.y = mouseHelper.position.y;
+          draggable.position.z = mouseHelper.position.z;
+
+          /*
           draggable.position.x = o.point.x;
           draggable.position.y = o.point.y;
           draggable.position.z = o.point.z;
+          */
         }
       }
     }
