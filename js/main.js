@@ -8,10 +8,10 @@ import * as THREE from "https://cdn.skypack.dev/three@0.133.0";
 import { OrbitControls } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/GLTFLoader.js";
 import { DecalGeometry } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples//jsm/geometries/DecalGeometry.js";
-import { GUI } from 'dat.gui'
+//import { GUI } from 'dat.gui'
 import { OutlinePass  } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/OutlinePass.js";
 import { EffectComposer } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/RenderPass.js';
+import GUI from 'lil-gui';
 //import Stats from '//cdn.jsdelivr.net/gh/Kevnz/stats.js/build/stats.min.js';
 import Stats from '../node_modules/stats-js/src/Stats'; //node_modules\stats-js\src
 //import {createBackground} from '../node_modules/three-vignette-background/index.js';
@@ -33,6 +33,8 @@ let raycaster;
 let line;
 let outlinePass;
 let composer;
+//var controls;
+
 //var background = createBackground();
 
 var Glat;
@@ -69,7 +71,7 @@ const intersects = [];
 let mouseHelper;
 const position = new THREE.Vector3();
 const orientation = new THREE.Euler();
-const gui = new GUI(); //new GUI({autoPlace: false, width: 260, hideable: true});
+//const gui = new GUI({ width: 460})
 
 const size = new THREE.Vector3(8, 8, 8);
 const params = {
@@ -114,26 +116,7 @@ window.rangeSlide = function (value) {
 window.printList = function (StringTest) {
   document.getElementById("Coord_List").value = StringTest;
 };
-window.axisHelper = function () {
-  var AxischeckBox = document.getElementById("axis");
 
-  if (AxischeckBox.checked == true) {
-    const axesHelper = new THREE.AxesHelper(250);
-    axesHelper.position.set(0, 0, 0);
-    scene.add(axesHelper);
-  } else if (AxischeckBox.checked == false) {
-    scene.remove(axesHelper); // why is this not working
-  }
-};
-window.boundsBoxView = function () {
-  var BoundscheckBox = document.getElementById("box");
-  if (BoundscheckBox.checked == true) {
-    scene.add(helper);
-    console.log("wooooooooo");
-  } else {
-    scene.remove(helper);
-  }
-};
 
 window.reload = function () {
   Initialisation();
@@ -142,7 +125,7 @@ window.reload = function () {
 function Initialisation() {
   //choice = document.getElementById('newone');
  // console.log(choice);
-
+createPanel();
   // Renderer for the actual obejct contatiner.
   renderer = new THREE.WebGLRenderer();
   /*
@@ -170,6 +153,8 @@ function Initialisation() {
   );
   camera.position.set(0, 0, 300);
   scene.add(camera);
+
+
   
   //Outline For Moveable Rocks
 /*
@@ -228,6 +213,7 @@ function Initialisation() {
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.addEventListener("change", Animation);
+
   controls.minDistance = 100;
   controls.maxDistance = 2000;
   controls.enablePan = false;
@@ -244,24 +230,53 @@ function Initialisation() {
   // let model = "models/Vesta_1_100.glb";
   GLTF_Loader(); // Call the loader function.
 
-  const axesHelper = new THREE.AxesHelper(250);
 
+
+
+  const axesHelper = new THREE.AxesHelper(250);
   axesHelper.position.set(0, 0, 0);
   scene.add(axesHelper);
-  scene.remove(axesHelper);
+  axesHelper.visible = false;
 
+  
+
+  /*
 
 //GUI
-    const placeFolder  = gui.addFolder("Placement Info");
-    const sceneFolder = gui.addFolder("Scene");
-    
+
+ 
+
+    const placeFolder  = panel.addFolder("Placement Info");
+    const debugFolder = panel.addFolder("Object Info"); 
+    const sceneFolder = panel.addFolder("Scene");
+
+    var xcoordinate;
+    var ycoordinate;
+    var zcoordinate ;
+    var latitude;
+    var longitude;
+/*
+    debug = {
+      'Xcoordinate' :"",
+      'Ycoordinate' :"",
+      'Zcoordinate' :"" ,
+      'Latitude' : "",
+      'Longitude' : "",
+    };
+
 
     settings = {
       'Wireframe': false,
-      'Opacity': 1.0,
+      'AxesHelper': false,
       'exportLists': exportLists,
       'Object Size': 1,
       'Object Type': "Rock",
+    //  'Object-ID' : id,
+      'xcoordinate' :"",
+      'Ycoordinate' :"",
+      'Zcoordinate' :"" ,
+      'Latitude' : "",
+      'Longitude' : "",
       //'BackGround Colour' : scene.background.color.getHex(),
 
       //'activate all': activateAllActions,
@@ -270,10 +285,27 @@ function Initialisation() {
      // 'modify step size': 0.05,
     };
     sceneFolder.add( settings, 'Wireframe' ).onChange( modelWireframe );
-    sceneFolder.add( settings, 'Opacity', 0.0, 0.01, 1.0 ).onChange( modelOpacity );
+    sceneFolder.add( settings, 'AxesHelper' ).onChange( axisHelper );
+  //  sceneFolder.add( settings, 'Opacity', 1.0, 10.0, 1.0).onChange( modelOpacity );
     placeFolder.add( settings, 'Object Size', 1.0, 10.0, 1.0 ).onChange( sizeSlider );
     placeFolder.add( settings, 'Object Type', ['Rock', 'Crater'] ).onChange( TypePicker );
     sceneFolder.add( settings, 'exportLists');
+  
+    //debugFolder.add( settings, 'Object-ID' , rockmesh.uuid).onChange();
+    
+    debugFolder.add( settings, 'xcoordinate' ).onChange(xcoordinate);
+    debugFolder.add( settings, 'Ycoordinate').onChange(infoUpdate);
+    debugFolder.add( settings, 'Zcoordinate').onChange(infoUpdate);
+    debugFolder.add( settings, 'Latitude' ).onChange(infoUpdate);
+    debugFolder.add( settings, 'Longitude').onChange(infoUpdate);
+    
+   /*
+    debugFolder.add(xcoordinate ).onChange(infoUpdate);
+    debugFolder.add(ycoordinate).onChange(infoUpdate);
+    debugFolder.add(zcoordinate).onChange(infoUpdate);
+    debugFolder.add(latitude).onChange(infoUpdate);
+    debugFolder.add(longitude).onChange(infoUpdate);
+      
    // sceneFolder.addaddColor(new ColorGUIHelper(scene.background,'color'),'value') //
   //  .name('color')
   //  .onChange(animationLoop)
@@ -285,11 +317,6 @@ function Initialisation() {
       mesh.material.wireframe = choice;
     }
 
-    function modelOpacity( opacity )
-    {
-      mesh.material.opacity = opacity;
-      console.log(opacity);
-    }
     function exportLists()
     {
       locationUpdater();
@@ -307,7 +334,21 @@ function Initialisation() {
       place_mode = 1;
       
     }
+    function infoUpdate( xcoordinate)
+    {
+      xcoordinate = mouseHelper.position.x;
+    }
 
+    function axisHelper (choice) {
+     // var AxischeckBox = document.getElementById("axis");
+    
+      if (choice == true) {
+        axesHelper.visible = true;
+      } else {
+        axesHelper.visible = false;
+      }
+    };
+*/
 /*
     ColorGUIHelper = class
     
@@ -326,9 +367,9 @@ function Initialisation() {
 
     sceneFolder.open();
     placeFolder.open();
-
 */
-
+//sceneFolder.open();
+//placeFolder.open();
   //Intersection check function
   function Check_Intersection(x, y) {
     //Checks there is a mesh.
@@ -460,10 +501,18 @@ function Initialisation() {
           document.getElementById("mY").value = mouseHelper.position.y;
           document.getElementById("mZ").value = mouseHelper.position.z;
 
+          settings.X_Coordinate = mouseHelper.position.x;
+          settings.Y_Coordinate = mouseHelper.position.y;
+          settings.Z_Coordinate = mouseHelper.position.z;
+
+          settings.Latitude = Glat;
+          settings.Longitude = Glng;
+          console.log("AAAAAAAAAAA",Glat,Glng);
+
           document.getElementById("mLAT").value = Glat;
           document.getElementById("mLNG").value = Glng;
 
-          console.log(place_mode);
+          
           //add to list
           // object.userData.draggable
         }
@@ -607,6 +656,8 @@ function Window_Resize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
+  
+
   Animation();
 }
 
@@ -621,6 +672,8 @@ function Animation() {
  
   dragObject();
   requestAnimationFrame(Animation);
+
+
   renderer.render(scene, camera);
   stats.update();
 }
@@ -785,6 +838,94 @@ function sizeCheck() {
   //console.log();
   scene.remove(helper);
 }
+
+var xcoord = "N/A"
+var ycoord = "N/A"
+var zcoord = "N/A"
+var Nlat = "N/A"
+var Nlng = "N/A"
+
+
+
+      function createPanel() {
+
+				const panel = new GUI( { width: 310 } );
+
+				const folder1 = panel.addFolder( 'Placement Tools' );
+				const folder2 = panel.addFolder( 'Placement Information' );
+				const folder3 = panel.addFolder( 'Scene Options' );
+
+
+        settings = {
+          'Wireframe': false,
+          'AxesHelper': false,
+          'exportLists': exportLists,
+          'Object Size': 1,
+          'Object Type': "Rock",
+          //Placement Info
+          'X_Coordinate' :xcoord,
+          'Y_Coordinate' :ycoord,
+          'Z_Coordinate' :zcoord,
+          'Latitude' : Nlat,
+          'Longitude' : Nlng,
+          //colours
+          'Background_Colour': 'rgb(135,135,134)',
+        };
+
+        folder1.add( settings, 'Wireframe' ).onChange( modelWireframe );
+        folder1.add( settings, 'AxesHelper' ).onChange( axisHelper );
+        folder1.add( settings, 'Object Size', 1.0, 10.0, 1.0 ).onChange( sizeSlider );
+        folder1.add( settings, 'Object Type', ['Rock', 'Crater'] ).onChange( TypePicker );
+        folder1.add( settings, 'exportLists')
+
+        folder2.add( settings, 'X_Coordinate').listen().disable();
+        folder2.add( settings, 'Y_Coordinate').listen().disable();
+        folder2.add( settings, 'Z_Coordinate').listen().disable();
+        folder2.add( settings, 'Latitude').listen().disable();
+        folder2.add( settings, 'Longitude').listen().disable();
+
+        folder3.addColor(settings,'Background_Colour').onChange( BackGroundColour );;
+
+
+        function modelWireframe( choice )
+        {
+          mesh.material.wireframe = choice;
+        }
+    
+        function exportLists()
+        {
+          locationUpdater();
+        }
+        function sizeSlider( rockSize )
+        {
+          place_size = rockSize;
+          
+        }
+        function TypePicker( placeType )
+        {
+          if(placeType == "Rock")
+          place_mode = 0;
+          else
+          place_mode = 1;
+          
+        }
+        function BackGroundColour()
+        {
+          scene.background = new THREE.Color( settings.Background_Colour );
+        }
+    
+        function axisHelper (choice) {
+         // var AxischeckBox = document.getElementById("axis");
+        
+          if (choice == true) {
+            axesHelper.visible = true;
+          } else {
+            axesHelper.visible = false;
+          }
+        };
+
+      }
+      
 //check box for axis guids
 /*
 function GLTF_Loader() {
