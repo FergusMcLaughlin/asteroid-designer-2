@@ -1,44 +1,31 @@
-/* 
-Asteroid Editor Prototype
-Sections taken from the Three.js examples.
-*/
+/***
+ * Asteroid Designer (AC40001 Honours Project)
+ * 
+ * A Web based Gltf loader that uese PANGU to allow 
+ * Users to edit asteroid models.
+ * 
+ * Fergus Mclaughlin (170015911), University of Dundee, 2022
+ */
+
 
 //Import the gltf loader, orbit controls and THREE
 import * as THREE from "https://cdn.skypack.dev/three@0.133.0";
 import { OrbitControls } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/GLTFLoader.js";
 import { DecalGeometry } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples//jsm/geometries/DecalGeometry.js";
-//import { GUI } from 'dat.gui'
-import { OutlinePass } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/OutlinePass.js";
-import { EffectComposer } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/postprocessing/EffectComposer.js";
-import GUI from "lil-gui";
 import { LightProbeGenerator } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/lights/LightProbeGenerator.js";
-import Stats from "../node_modules/stats-js/src/Stats"; //node_modules\stats-js\src
-//import {createBackground} from '../node_modules/three-vignette-background/index.js';
-// /import createBackground from '../node_modules/three-vignette-background';
-//import { DRACOLoader } from 'https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/DRACOLoader.js';
-/*
-                TODO
-move the file saveing stuff in here after 
-I get the intersectiopn point printing out
-*/
+import GUI from "lil-gui";
+import Stats from "../node_modules/stats-js/src/Stats";
 
-document.body.style.cursor = "none !important";
+
+
 //Declare global variables
-let renderer, scene, camera; //scene variables
-//added -
-let mesh;
-let rockmesh;
-let raycaster;
-let line;
-let outlinePass;
-let composer;
-//var controls;
+let renderer, scene, camera; 
+let mesh, rockmesh;
+let line, raycaster;
 var axesHelper;
-//var background = createBackground();
 
-var Glat;
-var Glng;
+var Glat, Glng;
 var choice = 1;
 var place_size = 1;
 var place_mode = 0;
@@ -46,15 +33,13 @@ let rockID = 0;
 const rockList = [];
 let selectedObject = [];
 
+
 //Testing
 var place_mode;
-var IDcount;
 var StringTest;
 var StringTest2;
-var StringBuffer;
-let actions, settings;
+let settings;
 
-//export {StringTest as StringTest}; // export IDS without
 export { StringTest2 as StringTest2 };
 export { StringTest as StringTest };
 import { saveDynamicDataToFile } from "./list_printer";
@@ -301,8 +286,6 @@ function Initialisation() {
 
           //   Coordinates_Converter();
         } else if (intersection.intersects && place_mode == 0) {
-          // console.log(mouseHelper.position);
-
           const loader = new GLTFLoader();
           var rockID = 0;
 
@@ -361,6 +344,9 @@ function Initialisation() {
 
           //add to list
           // object.userData.draggable
+        }
+        else if (intersection.intersects && place_mode == 1) {
+          place();
         }
       }
     }
