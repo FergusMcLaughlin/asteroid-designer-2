@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css\file_uploader.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+<!--
+    <div class="drop-zone">
+      <span class="drop-zone__prompt">Drop gltf or glb file here to upload.</span> 
+
+        <input type="file" name="myFile" class="drop-zone__input" id="myFile">
+
+    </div>
+-->
+<input type="file" id="newone"/>
+
+    <script src="js/Onlineloader.js" type = "module"></script>
+
+    
+    <a href="index2.html">Edit Model</a>
+    
+</body>
+</html>
+
+
+
+<!--
+    <form enctype="multipart/form-data">
+        <input id="upload" type=file   name="files[]" >
+        </form>
+        
+        <textarea class="form-control" rows=35 cols=120 id="ms_word_filtered_html"></textarea>
+        
+        <script>
+        function handleFileSelect(evt) {
+            let files = evt.target.files; // FileList object
+        
+            // use the 1st file from the list
+            let f = files[0];
+            
+            let reader = new FileReader();
+        
+            // Closure to capture the file information.
+            reader.onload = (function(theFile) {
+                return function(e) {
+                  
+                  jQuery( '#ms_word_filtered_html' ).val( e.target.result );
+                };
+              })(f);
+        
+              // Read in the image file as a data URL.
+              reader.readAsText(f);
+          }
+        
+          document.getElementById('upload').addEventListener('change', handleFileSelect, false);
+
+    </script>
+
+  -->  

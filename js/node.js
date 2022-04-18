@@ -1,6 +1,6 @@
 class node {
-    constructor(type, Nlat, Nlng, size, depth, index, next = null) {
-  
+    constructor(ID, type, Nlat, Nlng, size, depth, index, next = null) {
+        this.ID = ID;
         this.type = type;
   
         this.Nlat = Nlat;
