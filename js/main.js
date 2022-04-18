@@ -12,12 +12,15 @@
 import * as THREE from "https://cdn.skypack.dev/three@0.133.0";
 import { OrbitControls } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/loaders/DRACOLoader.js";
 import { DecalGeometry } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples//jsm/geometries/DecalGeometry.js";
 import { LightProbeGenerator } from "https://cdn.skypack.dev/pin/three@v0.133.0-mRqtjW5H6POaf81d9bnr/mode=imports/unoptimized/examples/jsm/lights/LightProbeGenerator.js";
 import GUI from "lil-gui";
 import Stats from "../node_modules/stats-js/src/Stats";
 import { saveDynamicDataToFile } from "./list_printer";
 
+
+const DRACO_LOADER = new DRACOLoader();
 
 //Declare global variables
 let renderer, scene, camera; 
@@ -95,15 +98,18 @@ function Initialisation() {
     createPanel();
 
     // Renderer for the obejct contatiner.
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias : false, powerPreference: "high-performance"});
     renderer.setSize(window.innerWidth, window.innerHeight, false);
     document.body.appendChild(renderer.domElement);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.NoToneMapping;
 
+    //Lower résolution
+    renderer.setPixelRatio( window.devicePixelRatio * 1.0 );
+
      // Scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    scene.background = new THREE.Color(0xd2d4d6);
 
     // Camera
     camera = new THREE.PerspectiveCamera(
@@ -427,13 +433,14 @@ function Coordinates_Converter() {
 //loads fiels in a gltf format
 function GLTF_Loader() {
   const loader = new GLTFLoader();
+  loader.parse(obj, "", (glb) => {
+    mesh = glb.scene.children[0];
 
-  loader.parse(obj, "", (gltf) => {
-    mesh = gltf.scene.children[0];
-
+    mesh.scale.set(0.005, 0.005, 0.005);
     scene.add(mesh);
-    mesh.scale.set(0.5, 0.5, 0.5);
+    
     mesh.userData.asteroid = true;
+
 
     mesh.traverse((child) => {
       //   console.log("element: ", child.name, child.scale);
@@ -687,12 +694,12 @@ function createPanel() {
     'Latitude': Nlat,
     'Longitude': Nlng,
     //colours
-    'Background_Colour': "rgb(0,0,0)",
-    'Ambient_Light': 1.5,
+    'Background_Colour': "rgb(210,212,214)",
+    'Ambient_Light': 1.0,
     'Direct_Light': 1.5,
     'Probe_Light': 1.5,
-    'Ambient_Colour': "rgb(255,255,255)",
-    'Direct_Colour': "rgb(255,255,255)",
+    'Ambient_Colour': "rgb(53,34,122)",
+    'Direct_Colour': "rgb(255,68,0)",
   };
 
   folder1.add(settings, "Wireframe").onChange(modelWireframe);
