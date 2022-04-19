@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" type="image/svg+xml" href="/assets/Plogo.a45d701f.png" />
+    <link rel="icon" href="http://example.com/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Asteroid Designer</title>
+  <link rel="stylesheet" href="/assets/index.ef8bcaf0.css">
+</head>
+<body>
+    <section class="splash ">
+        <header>   
+            <div class = logoImage2>
+            <img src="/assets/Plogo.a45d701f.png" width="10%" height="10%" object-fit="contain">
+            </div>
+            <div class = "toggle "></div>
+        </header>
+       
+        <video disablePictureInPicture src="/assets/Pexels Videos 4482.11484f70.mp4" muted loop autoplay></video>
+
+        <div class="overlay"></div>
+
+        <div class="text">
+            <h2>PANGU</h2>
+            <h3>ASTEROID Designer</h3>
+            <p>Prototype asteroid designer useing java script and PANGU.</p>
+            <a href="/index2.html">Edit Model</a>
+        </div>
+    </section>
+
+
+
+
+<div class="menu">
+<ul>
+    <li><a href="main.html">HOME</a></li>
+    <li><a href="https://www.star-dundee.com/products/pangu-planet-and-asteroid-natural-scene-generation-utility/#product_features">PANGU</a></li>
+    <li><a href="Model_Editor.html">ABOUT</a></li>
+    <li><a href="https://github.com/FergusMcLaughlin/asteroid-designer-2">GITHUB</a></li>
+</ul>
+</div>
+
+<script>
+    const menuToggle = document.querySelector('.toggle')
+    const splash = document.querySelector('.splash')
+    
+    menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active') 
+    splash.classList.toggle('active')
+})
+
+</script>
+
+
+</body>
+</html>
